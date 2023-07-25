@@ -1,4 +1,4 @@
-import { Maker } from '@/components/maker';
+import { Maker } from '@/components';
 
 export default function Home() {
   return (

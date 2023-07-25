@@ -1,4 +1,6 @@
+import { Question } from '@/components';
+
 export const Maker = () =>
   <div className="">
-    Maker
+    <Question />
   </div>;
