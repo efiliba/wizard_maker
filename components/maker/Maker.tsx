@@ -54,9 +54,9 @@ export const Maker = () => {
   };
 
   return (
-    <div className="">
+    <div className="p-10">
       <Wizard step={serverState} />
-      <Question editMode question={serverState.question} onSave={handleSaveQuestion} />
+      {/* <Question editMode question={serverState.question} onSave={handleSaveQuestion} /> */}
     </div>
   );
 };
