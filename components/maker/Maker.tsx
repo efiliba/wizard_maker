@@ -1,9 +1,45 @@
 import { revalidatePath } from 'next/cache';
 
-import { Question } from '@/components';
+import { Wizard, WizardStep, Question } from '@/components';
 
-const serverState = {
-  question: 'Initial custom question',
+const serverState: WizardStep = {
+  question: 'Was there a fall?',
+  answer: {
+    yes: {
+      actions: [
+        'Call an ambulace.',
+        'File incident report on VWorker within 24 hours.'
+      ]
+    },
+    no: {
+      question: 'Was there a medication error?',
+      answer: {
+        yes: {
+          question: 'Was it the wrong medication?',
+          answer: {
+            yes: {
+              actions: [
+                'Run'
+              ],
+              triggers: [
+                'CallPolice'
+              ]
+            },
+            no: {
+              actions: [
+                'Be careful next time'
+              ],
+            }
+          }
+        },
+        no: {
+          actions: [
+            'File incident report on VWorker.'
+          ]
+        }
+      }
+    }
+  },
 };
 
 export const Maker = () => {
@@ -19,9 +55,8 @@ export const Maker = () => {
 
   return (
     <div className="">
+      <Wizard step={serverState} />
       <Question editMode question={serverState.question} onSave={handleSaveQuestion} />
-      <br />
-      <Question question="Was there a fall?" />
     </div>
   );
 };
