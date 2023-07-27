@@ -19,7 +19,7 @@ export const EditQuestion = ({ initialQuestion = '', onSaveQuestion }: Props) =>
   const handleSaveQuestion = () => startTransition(() => onSaveQuestion(question));
 
   return (
-    <div>
+    <div className="grid grid-cols-[1fr_max-content]">
       <Input type="text" placeholder="Enter question" value={question} onChange={handleUpdateQuestion} />
       <Button disabled={pending} onClick={handleSaveQuestion}>
         {pending

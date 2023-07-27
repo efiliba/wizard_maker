@@ -12,7 +12,7 @@ type Props = {
 
 export const Question = ({ editMode = false, question, onSave = () => Promise.resolve() }: Props) => {
   return (
-    <div className="">
+    <div className="font-bold">
       {editMode
         ? <EditQuestion initialQuestion={question} onSaveQuestion={onSave}/>
         : question
