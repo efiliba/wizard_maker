@@ -1,6 +1,6 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Checkbox } from "@/components/ui";
 
-import { Question } from '@/components';
+import { Question, NextQuestionOrActions } from '@/components';
 
 const mapQuestionByIndex = (index: number) => {
   switch (index) {
@@ -9,12 +9,16 @@ const mapQuestionByIndex = (index: number) => {
   }
 };
 
-const addQuestionTextAndStyles = (type: string) => (answer: object, index: number) => ({
-  ...answer,
-  ...mapQuestionByIndex(index),
-});
+const addQuestionTextAndStylesReducer = (type: string) => (paddedAnswers: object[], answer: object, index: number) => {
+  paddedAnswers[index] = {
+    ...paddedAnswers[index],
+    ...answer,
+  };
+  return paddedAnswers;
+};
 
 export type WizardStep = {
+} | {
   actions: string[],
   triggers?: string[],
 } | {
@@ -24,12 +28,15 @@ export type WizardStep = {
 
 type Props = {
   className?: string,
+  editable?: boolean,
   step: WizardStep,
   path?: number[],
+  onNextQuestion: (path: number[]) => Promise<void>,
+  onActions: (path: number[]) => Promise<void>,
   onSaveQuestion: (path: number[]) => (question: string) => Promise<void>,
 };
 
-const Answer = ({ step, path, onSaveQuestion }: Props) => {
+const Answer = ({ editable, step, path, onNextQuestion, onActions, onSaveQuestion }: Props) => {  
   if (step.actions) {
     return (
       <ul className="border">
@@ -45,20 +52,48 @@ const Answer = ({ step, path, onSaveQuestion }: Props) => {
     );
   }
 
-  return <Wizard step={step} path={path} onSaveQuestion={onSaveQuestion} />;
+  if (step.question !== undefined) {
+    return <Wizard
+      editable={editable}
+      step={step}
+      path={path}
+      onNextQuestion={onNextQuestion}
+      onActions={onActions}
+      onSaveQuestion={onSaveQuestion}
+    />;
+  }
+
+  return <NextQuestionOrActions path={path} onNextQuestion={onNextQuestion} onActions={onActions} />;
 };
 
-export const Wizard = ({ className, step: { question, answers }, path = [], onSaveQuestion}: Props) =>
+export const Wizard = ({
+  className,
+  editable,
+  step: { question, answers = [] },
+  path = [],
+  onNextQuestion,
+  onActions,
+  onSaveQuestion
+}: Props) =>
   <div className={`p-2 border ${className}`}>
-    <Question editMode question={question} onSave={onSaveQuestion(path)} />
-    <Accordion type="single" collapsible>
+    <Question editMode={editable} question={question} onSave={onSaveQuestion(path)} />
+    <Accordion type={editable ? 'multiple' : 'single'} collapsible={!editable}>
       {answers
-        .map(addQuestionTextAndStyles('boolean'))
+        .reduce(addQuestionTextAndStylesReducer('boolean'), [mapQuestionByIndex(0), mapQuestionByIndex(1)])
         .map((answer, index) =>
           <AccordionItem key={index} value={`item${index}`}>
-            <AccordionTrigger className={`p-4 border ${answer.backgroundColor}`}>{answer.questionText}</AccordionTrigger>
+            <AccordionTrigger className={`p-4 border ${answer.backgroundColor}`}>
+              {answer.questionText}
+            </AccordionTrigger>
             <AccordionContent>
-              <Answer step={answer} path={path.concat(index)} onSaveQuestion={onSaveQuestion} />
+              <Answer
+                editable={editable}
+                step={answer}
+                path={path.concat(index)}
+                onNextQuestion={onNextQuestion}
+                onActions={onActions}
+                onSaveQuestion={onSaveQuestion}
+              />
             </AccordionContent>
           </AccordionItem>
         )

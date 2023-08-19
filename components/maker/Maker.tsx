@@ -3,7 +3,7 @@ import { set } from 'lodash';
 
 import { Wizard, WizardStep, Question } from '@/components';
 
-const serverState: WizardStep = {
+let serverState: WizardStep = {
   question: 'Was there a fall?',
   answers: [
     {
@@ -43,30 +43,65 @@ const serverState: WizardStep = {
   ],
 };
 
-const mutateStateAtPath = async (state, path, value) => {
-  "use server";
+serverState = {}; // CHANGE THIS
 
-  console.log("--------------------");
-  console.log("Check if serverState is being mutated correctly", state);
-  
-  const buildPath = path.map(p => `answers[${p}]`).join('.')
-  set(state, `${buildPath}.question`, value);
+// serverState = {
+//   question: 'Some question',
+//   answers: [{
+//     question: 'Nested question',
+//   // }, {
+//   //   actions: ['Some action']
+//   }]
+// };
+
+const mutateQuestionAtPath = async (state: WizardStep, path: number[], question: string) => {
+  const buildPath = path.map(p => `answers[${p}]`).concat('question').join('.');
+  set(state, buildPath, question);
+};
+
+const mutateAnswerAtPath = async (state: WizardStep, path: number[], answer: object) => {
+  const buildPath = path.map(p => `answers[${p}]`).join('.');
+  set(state, buildPath, answer);
 };
 
 export const Maker = () => {
+  const handleNextQuestion = async (path: number[]) => {
+    "use server";
+  
+    // await new Promise(resolve => setTimeout(resolve, 500));
+
+    mutateAnswerAtPath(serverState, path, { question: null });
+
+    revalidatePath('/');
+  };
+  
+  const handleActions = async (path: number[]) => {
+    "use server";
+  
+    console.log('handleActions', path);
+  };
+
   const handleSaveQuestion = (path: number[]) => async (question: string) => {
     "use server";
 
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    mutateStateAtPath(serverState, path, question);
+    mutateQuestionAtPath(serverState, path, question);
 
-    console.log(JSON.stringify(serverState, null, 2));
+    // console.log("--------------------");
+    // console.log('UPDATED', JSON.stringify(serverState, null, 2));
     
     revalidatePath('/');
   };
 
   return (
-    <Wizard className="p-10" step={serverState} onSaveQuestion={handleSaveQuestion} />
+    <Wizard
+      className="p-10"
+      editable
+      step={serverState}
+      onNextQuestion={handleNextQuestion}
+      onActions={handleActions}
+      onSaveQuestion={handleSaveQuestion}
+    />
   );
 };
