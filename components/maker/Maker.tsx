@@ -1,9 +1,9 @@
 import { revalidatePath } from 'next/cache';
 import { set } from 'lodash';
 
-import { Wizard, WizardStep, Question } from '@/components';
+import { Wizard, WizardProps } from '@/components';
 
-let serverState: WizardStep = {
+let serverState: WizardProps["step"] = {
   question: 'Was there a fall?',
   answers: [
     {
@@ -43,14 +43,14 @@ let serverState: WizardStep = {
   ],
 };
 
-// serverState = {}; // CHANGE THIS
+serverState = {}; // CHANGE THIS
 
-const mutateQuestionAtPath = async (state: WizardStep, path: number[], question: string) => {
+const mutateQuestionAtPath = async (state: WizardProps["step"], path: number[], question: string) => {
   const buildPath = path.map(p => `answers[${p}]`).concat('question').join('.');
   set(state, buildPath, question);
 };
 
-const mutateAnswerAtPath = async (state: WizardStep, path: number[], answer: object) => {
+const mutateAnswerAtPath = async (state: WizardProps["step"], path: number[], answer: object) => {
   const buildPath = path.map(p => `answers[${p}]`).join('.');
   set(state, buildPath, answer);
 };

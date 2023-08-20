@@ -6,27 +6,44 @@ const mapQuestionByIndex = (index: number) => {
   switch (index) {
     case 0: return { questionText: 'Yes', backgroundColor: 'bg-primary' };
     case 1: return { questionText: 'No', backgroundColor: 'bg-secondary' };
+    default: return {};
   }
 };
 
-const addQuestionTextAndStylesReducer = (type: string) => (paddedAnswers: object[], answer: object, index: number) => {
-  paddedAnswers[index] = {
-    ...paddedAnswers[index],
-    ...answer,
+const addQuestionTextAndStylesReducer = (type: string) =>
+  <T,>(paddedAnswers: (T & WizardStep)[], answer: WizardStep, index: number) => {
+    paddedAnswers[index] = {
+      ...paddedAnswers[index],
+      ...answer,
+    };
+
+    return paddedAnswers;
   };
-  return paddedAnswers;
+
+type QuestionStep = {
+  question?: string,
+  answers?: WizardStep[],
 };
 
-export type WizardStep = {
-} | {
+type ActionsStep = {
   actions: string[],
   triggers?: string[],
-} | {
-  question: string;
-  answers: WizardStep[],
 };
 
-type Props = {
+type WizardStep = QuestionStep | ActionsStep;
+
+export type WizardProps = {
+  className?: string,
+  editable?: boolean,
+  step: QuestionStep,
+  path?: number[],
+  onAddNextQuestion: (path: number[]) => Promise<void>,
+  onAddActions: (path: number[]) => Promise<void>,
+  onSaveQuestion: (path: number[]) => (question: string) => Promise<void>,
+  onEditActions: (path: number[]) => () => void,
+};
+
+type AnswerProps = {
   className?: string,
   editable?: boolean,
   step: WizardStep,
@@ -37,12 +54,15 @@ type Props = {
   onEditActions: (path: number[]) => () => void,
 };
 
-const Answer = ({ editable, step, path, onAddNextQuestion, onAddActions, onSaveQuestion, onEditActions }: Props) => {  
-  if (step.actions) {
-    return <Actions editable={editable} actions={step.actions} onEditActions={onEditActions(path)} />
+const isActionsStep = (step: WizardStep): step is ActionsStep => "actions" in step;
+const isQuestionStep = (step: WizardStep): step is QuestionStep => "question" in step;
+
+const Answer = ({ editable, step, path, onAddNextQuestion, onAddActions, onSaveQuestion, onEditActions }: AnswerProps) => {
+  if (isActionsStep(step)) {
+    return <Actions editable={editable} actions={step.actions} onEditActions={onEditActions(path!)} />
   }
 
-  if (step.question !== undefined) {
+  if (isQuestionStep(step)) {
     return <Wizard
       editable={editable}
       step={step}
@@ -54,7 +74,7 @@ const Answer = ({ editable, step, path, onAddNextQuestion, onAddActions, onSaveQ
     />;
   }
 
-  return <NextQuestionOrActions path={path} onAddNextQuestion={onAddNextQuestion} onAddActions={onAddActions} />;
+  return <NextQuestionOrActions path={path!} onAddNextQuestion={onAddNextQuestion} onAddActions={onAddActions} />;
 };
 
 export const Wizard = ({
@@ -66,9 +86,9 @@ export const Wizard = ({
   onAddActions,
   onSaveQuestion,
   onEditActions,
-}: Props) =>
+}: WizardProps) =>
   <div className={`p-2 border ${className}`}>
-    <Question editMode={editable} question={question} onSave={onSaveQuestion(path)} />
+    <Question editMode={editable} question={question!} onSave={onSaveQuestion(path)} />
     <Accordion type={editable ? 'multiple' : 'single'} collapsible={!editable}>
       {answers
         .reduce(addQuestionTextAndStylesReducer('boolean'), [mapQuestionByIndex(0), mapQuestionByIndex(1)])
@@ -80,7 +100,7 @@ export const Wizard = ({
             <AccordionContent>
               <Answer
                 editable={editable}
-                step={answer}
+                step={answer as WizardStep}
                 path={path.concat(index)}
                 onAddNextQuestion={onAddNextQuestion}
                 onAddActions={onAddActions}

@@ -10,7 +10,7 @@ type Props = {
   onSave: (question: string) => Promise<void>,
 };
 
-export const Question = ({ editMode = false, question, onSave = () => Promise.resolve() }: Props) => {
+export const Question = ({ editMode, question, onSave = () => Promise.resolve() }: Props) => {
   return (
     <div className="font-bold">
       {editMode
