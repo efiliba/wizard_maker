@@ -1,6 +1,6 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui";
-
 import { Question, Actions, NextQuestionOrActions } from '@/components';
+import { QuestionStep, ActionsStep, WizardStep } from "@/types";
 
 const mapQuestionByIndex = (index: number) => {
   switch (index) {
@@ -20,18 +20,6 @@ const addQuestionTextAndStylesReducer = (type: string) =>
     return paddedAnswers;
   };
 
-type QuestionStep = {
-  question?: string,
-  answers?: WizardStep[],
-};
-
-type ActionsStep = {
-  actions: string[],
-  triggers?: string[],
-};
-
-type WizardStep = QuestionStep | ActionsStep;
-
 export type WizardProps = {
   className?: string,
   editable?: boolean,
@@ -40,7 +28,7 @@ export type WizardProps = {
   onAddNextQuestion: (path: number[]) => () => Promise<void>,
   onAddActions: (path: number[]) => () => Promise<void>,
   onUpdateQuestion: (path: number[]) => (question: string) => Promise<void>,
-  onUpdateActions: (path: number[]) => () => void,
+  onUpdateActions: (path: number[]) => (data: ActionsStep) => void,
 };
 
 type AnswerProps = WizardProps & { step: WizardStep };
@@ -58,7 +46,7 @@ const Answer = ({
   onUpdateActions
 }: AnswerProps) => {
   if (isActionsStep(step)) {
-    return <Actions editable={editable} actions={step.actions} onUpdateActions={onUpdateActions(path!)} />
+    return <Actions editable={editable} data={step} onUpdate={onUpdateActions(path!)} />;
   }
 
   if (isQuestionStep(step)) {

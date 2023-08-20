@@ -1,7 +1,8 @@
-import { revalidatePath } from 'next/cache';
-import { set } from 'lodash';
+import { revalidatePath } from "next/cache";
+import { set } from "lodash";
 
-import { Wizard, WizardProps } from '@/components';
+import { Wizard, WizardProps } from "@/components";
+import { ActionsStep } from "@/types";
 
 let serverState: WizardProps["step"] = {
   question: 'Was there a fall?',
@@ -87,10 +88,10 @@ export const Maker = () => {
     revalidatePath('/');
   };
 
-  const handleUpdateActions = (path: number[]) => async () => {
+  const handleUpdateActions = (path: number[]) => async (data: ActionsStep) => {
     "use server";
 
-    console.log("handleUpdateActions", path);
+    console.log("handleUpdateActions - Update serverState - using path with data", path, data);
   };
 
   return (
