@@ -37,22 +37,13 @@ export type WizardProps = {
   editable?: boolean,
   step: QuestionStep,
   path?: number[],
-  onAddNextQuestion: (path: number[]) => Promise<void>,
-  onAddActions: (path: number[]) => Promise<void>,
+  onAddNextQuestion: (path: number[]) => () => Promise<void>,
+  onAddActions: (path: number[]) => () => Promise<void>,
   onSaveQuestion: (path: number[]) => (question: string) => Promise<void>,
   onEditActions: (path: number[]) => () => void,
 };
 
-type AnswerProps = {
-  className?: string,
-  editable?: boolean,
-  step: WizardStep,
-  path?: number[],
-  onAddNextQuestion: (path: number[]) => Promise<void>,
-  onAddActions: (path: number[]) => Promise<void>,
-  onSaveQuestion: (path: number[]) => (question: string) => Promise<void>,
-  onEditActions: (path: number[]) => () => void,
-};
+type AnswerProps = WizardProps & { step: WizardStep };
 
 const isActionsStep = (step: WizardStep): step is ActionsStep => "actions" in step;
 const isQuestionStep = (step: WizardStep): step is QuestionStep => "question" in step;
@@ -74,7 +65,7 @@ const Answer = ({ editable, step, path, onAddNextQuestion, onAddActions, onSaveQ
     />;
   }
 
-  return <NextQuestionOrActions path={path!} onAddNextQuestion={onAddNextQuestion} onAddActions={onAddActions} />;
+  return <NextQuestionOrActions onAddNextQuestion={onAddNextQuestion(path!)} onAddActions={onAddActions(path!)} />;
 };
 
 export const Wizard = ({

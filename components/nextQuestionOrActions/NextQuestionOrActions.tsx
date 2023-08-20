@@ -3,14 +3,13 @@
 import { Button } from '@/components/ui';
 
 type Props = {
-  path: number[],
-  onAddNextQuestion: (path: number[]) => Promise<void>,
-  onAddActions: (path: number[]) => Promise<void>,
+  onAddNextQuestion: () => Promise<void>,
+  onAddActions: () => Promise<void>,
 };
 
-export const NextQuestionOrActions = ({ path, onAddNextQuestion, onAddActions }: Props) => {
-  const handleAddNextQuestion = () => onAddNextQuestion(path);
-  const handleAddActions = () => onAddActions(path);
+export const NextQuestionOrActions = ({ onAddNextQuestion, onAddActions }: Props) => {
+  const handleAddNextQuestion = () => onAddNextQuestion();
+  const handleAddActions = () => onAddActions();
 
   return (
     <div className="font-bold">

@@ -56,17 +56,17 @@ const mutateAnswerAtPath = async (state: WizardProps["step"], path: number[], an
 };
 
 export const Maker = () => {
-  const handleAddNextQuestion = async (path: number[]) => {
+  const handleAddNextQuestion = (path: number[]) => async () => {
     "use server";
   
     // await new Promise(resolve => setTimeout(resolve, 500));
 
-    mutateAnswerAtPath(serverState, path, { question: null });
+    mutateAnswerAtPath(serverState, path, { question: '' });
 
     revalidatePath('/');
   };
   
-  const handleAddActions = async (path: number[]) => {
+  const handleAddActions = (path: number[]) => async () => {
     "use server";
   
     mutateAnswerAtPath(serverState, path, { actions: ['Some action'] });
