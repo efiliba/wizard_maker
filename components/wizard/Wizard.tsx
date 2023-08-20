@@ -1,6 +1,6 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Checkbox } from "@/components/ui";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui";
 
-import { Question, NextQuestionOrActions } from '@/components';
+import { Question, Actions, NextQuestionOrActions } from '@/components';
 
 const mapQuestionByIndex = (index: number) => {
   switch (index) {
@@ -31,25 +31,15 @@ type Props = {
   editable?: boolean,
   step: WizardStep,
   path?: number[],
-  onNextQuestion: (path: number[]) => Promise<void>,
-  onActions: (path: number[]) => Promise<void>,
+  onAddNextQuestion: (path: number[]) => Promise<void>,
+  onAddActions: (path: number[]) => Promise<void>,
   onSaveQuestion: (path: number[]) => (question: string) => Promise<void>,
+  onEditActions: (path: number[]) => () => void,
 };
 
-const Answer = ({ editable, step, path, onNextQuestion, onActions, onSaveQuestion }: Props) => {  
+const Answer = ({ editable, step, path, onAddNextQuestion, onAddActions, onSaveQuestion, onEditActions }: Props) => {  
   if (step.actions) {
-    return (
-      <ul className="border">
-        {step.actions.map((action, index) =>
-          <li key={index} className="pl-2 pt-2 grid grid-cols-[max-content_1fr] items-center">
-            <Checkbox id={`step${index}`} />
-            <label htmlFor={`step${index}`} className="pl-2 font-semibold">
-              {action}
-            </label>
-          </li>
-        )}
-      </ul>
-    );
+    return <Actions editable={editable} actions={step.actions} onEditActions={onEditActions(path)} />
   }
 
   if (step.question !== undefined) {
@@ -57,13 +47,14 @@ const Answer = ({ editable, step, path, onNextQuestion, onActions, onSaveQuestio
       editable={editable}
       step={step}
       path={path}
-      onNextQuestion={onNextQuestion}
-      onActions={onActions}
+      onAddNextQuestion={onAddNextQuestion}
+      onAddActions={onAddActions}
       onSaveQuestion={onSaveQuestion}
+      onEditActions={onEditActions}
     />;
   }
 
-  return <NextQuestionOrActions path={path} onNextQuestion={onNextQuestion} onActions={onActions} />;
+  return <NextQuestionOrActions path={path} onAddNextQuestion={onAddNextQuestion} onAddActions={onAddActions} />;
 };
 
 export const Wizard = ({
@@ -71,9 +62,10 @@ export const Wizard = ({
   editable,
   step: { question, answers = [] },
   path = [],
-  onNextQuestion,
-  onActions,
-  onSaveQuestion
+  onAddNextQuestion,
+  onAddActions,
+  onSaveQuestion,
+  onEditActions,
 }: Props) =>
   <div className={`p-2 border ${className}`}>
     <Question editMode={editable} question={question} onSave={onSaveQuestion(path)} />
@@ -90,9 +82,10 @@ export const Wizard = ({
                 editable={editable}
                 step={answer}
                 path={path.concat(index)}
-                onNextQuestion={onNextQuestion}
-                onActions={onActions}
+                onAddNextQuestion={onAddNextQuestion}
+                onAddActions={onAddActions}
                 onSaveQuestion={onSaveQuestion}
+                onEditActions={onEditActions}
               />
             </AccordionContent>
           </AccordionItem>

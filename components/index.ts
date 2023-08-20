@@ -1,3 +1,4 @@
+export * from './actions';
 export * from './maker';
 export * from './nextQuestionOrActions';
 export * from './question';

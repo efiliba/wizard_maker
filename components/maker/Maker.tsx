@@ -43,16 +43,7 @@ let serverState: WizardStep = {
   ],
 };
 
-serverState = {}; // CHANGE THIS
-
-// serverState = {
-//   question: 'Some question',
-//   answers: [{
-//     question: 'Nested question',
-//   // }, {
-//   //   actions: ['Some action']
-//   }]
-// };
+// serverState = {}; // CHANGE THIS
 
 const mutateQuestionAtPath = async (state: WizardStep, path: number[], question: string) => {
   const buildPath = path.map(p => `answers[${p}]`).concat('question').join('.');
@@ -65,7 +56,7 @@ const mutateAnswerAtPath = async (state: WizardStep, path: number[], answer: obj
 };
 
 export const Maker = () => {
-  const handleNextQuestion = async (path: number[]) => {
+  const handleAddNextQuestion = async (path: number[]) => {
     "use server";
   
     // await new Promise(resolve => setTimeout(resolve, 500));
@@ -75,10 +66,12 @@ export const Maker = () => {
     revalidatePath('/');
   };
   
-  const handleActions = async (path: number[]) => {
+  const handleAddActions = async (path: number[]) => {
     "use server";
   
-    console.log('handleActions', path);
+    mutateAnswerAtPath(serverState, path, { actions: ['Some action'] });
+
+    revalidatePath('/');
   };
 
   const handleSaveQuestion = (path: number[]) => async (question: string) => {
@@ -94,14 +87,21 @@ export const Maker = () => {
     revalidatePath('/');
   };
 
+  const handleEditActions = (path: number[]) => async () => {
+    "use server";
+
+    console.log("handleEditActions", path);
+  };
+
   return (
     <Wizard
       className="p-10"
       editable
       step={serverState}
-      onNextQuestion={handleNextQuestion}
-      onActions={handleActions}
+      onAddNextQuestion={handleAddNextQuestion}
+      onAddActions={handleAddActions}
       onSaveQuestion={handleSaveQuestion}
+      onEditActions={handleEditActions}
     />
   );
 };
