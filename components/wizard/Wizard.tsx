@@ -39,8 +39,8 @@ export type WizardProps = {
   path?: number[],
   onAddNextQuestion: (path: number[]) => () => Promise<void>,
   onAddActions: (path: number[]) => () => Promise<void>,
-  onSaveQuestion: (path: number[]) => (question: string) => Promise<void>,
-  onEditActions: (path: number[]) => () => void,
+  onUpdateQuestion: (path: number[]) => (question: string) => Promise<void>,
+  onUpdateActions: (path: number[]) => () => void,
 };
 
 type AnswerProps = WizardProps & { step: WizardStep };
@@ -48,21 +48,31 @@ type AnswerProps = WizardProps & { step: WizardStep };
 const isActionsStep = (step: WizardStep): step is ActionsStep => "actions" in step;
 const isQuestionStep = (step: WizardStep): step is QuestionStep => "question" in step;
 
-const Answer = ({ editable, step, path, onAddNextQuestion, onAddActions, onSaveQuestion, onEditActions }: AnswerProps) => {
+const Answer = ({
+  editable,
+  step,
+  path,
+  onAddNextQuestion,
+  onAddActions,
+  onUpdateQuestion,
+  onUpdateActions
+}: AnswerProps) => {
   if (isActionsStep(step)) {
-    return <Actions editable={editable} actions={step.actions} onEditActions={onEditActions(path!)} />
+    return <Actions editable={editable} actions={step.actions} onUpdateActions={onUpdateActions(path!)} />
   }
 
   if (isQuestionStep(step)) {
-    return <Wizard
-      editable={editable}
-      step={step}
-      path={path}
-      onAddNextQuestion={onAddNextQuestion}
-      onAddActions={onAddActions}
-      onSaveQuestion={onSaveQuestion}
-      onEditActions={onEditActions}
-    />;
+    return (
+      <Wizard
+        editable={editable}
+        step={step}
+        path={path}
+        onAddNextQuestion={onAddNextQuestion}
+        onAddActions={onAddActions}
+        onUpdateQuestion={onUpdateQuestion}
+        onUpdateActions={onUpdateActions}
+      />
+    );
   }
 
   return <NextQuestionOrActions onAddNextQuestion={onAddNextQuestion(path!)} onAddActions={onAddActions(path!)} />;
@@ -75,11 +85,11 @@ export const Wizard = ({
   path = [],
   onAddNextQuestion,
   onAddActions,
-  onSaveQuestion,
-  onEditActions,
+  onUpdateQuestion,
+  onUpdateActions,
 }: WizardProps) =>
   <div className={`p-2 border ${className}`}>
-    <Question editMode={editable} question={question!} onSave={onSaveQuestion(path)} />
+    <Question editMode={editable} question={question!} onSave={onUpdateQuestion(path)} />
     <Accordion type={editable ? 'multiple' : 'single'} collapsible={!editable}>
       {answers
         .reduce(addQuestionTextAndStylesReducer('boolean'), [mapQuestionByIndex(0), mapQuestionByIndex(1)])
@@ -95,8 +105,8 @@ export const Wizard = ({
                 path={path.concat(index)}
                 onAddNextQuestion={onAddNextQuestion}
                 onAddActions={onAddActions}
-                onSaveQuestion={onSaveQuestion}
-                onEditActions={onEditActions}
+                onUpdateQuestion={onUpdateQuestion}
+                onUpdateActions={onUpdateActions}
               />
             </AccordionContent>
           </AccordionItem>

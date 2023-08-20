@@ -7,17 +7,17 @@ import { Input, Button } from '@/components/ui';
 
 type Props = {
   initialQuestion?: string,
-  onSaveQuestion: (question: string) => Promise<void>,
+  onUpdateQuestion: (question: string) => Promise<void>,
 };
 
-export const EditQuestion = ({ initialQuestion = '', onSaveQuestion }: Props) => {
+export const EditQuestion = ({ initialQuestion = '', onUpdateQuestion }: Props) => {
   const [question, setQuestion] = useState(initialQuestion);
 
   const [pending, startTransition] = useTransition();
 
   const handleUpdateQuestion = (input: ChangeEvent<HTMLInputElement>) => setQuestion(input.target.value);
 
-  const handleSaveQuestion = () => startTransition(() => onSaveQuestion(question));
+  const handleSaveQuestion = () => startTransition(() => onUpdateQuestion(question));
 
   return (
     <div className="grid grid-cols-[1fr_max-content]">

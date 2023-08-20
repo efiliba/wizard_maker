@@ -14,7 +14,7 @@ export const Question = ({ editMode, question, onSave = () => Promise.resolve() 
   return (
     <div className="font-bold">
       {editMode
-        ? <EditQuestion initialQuestion={question} onSaveQuestion={onSave}/>
+        ? <EditQuestion initialQuestion={question} onUpdateQuestion={onSave}/>
         : question
       }
     </div>

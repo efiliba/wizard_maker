@@ -43,7 +43,7 @@ let serverState: WizardProps["step"] = {
   ],
 };
 
-serverState = {}; // CHANGE THIS
+// serverState = {}; // CHANGE THIS
 
 const mutateQuestionAtPath = async (state: WizardProps["step"], path: number[], question: string) => {
   const buildPath = path.map(p => `answers[${p}]`).concat('question').join('.');
@@ -74,7 +74,7 @@ export const Maker = () => {
     revalidatePath('/');
   };
 
-  const handleSaveQuestion = (path: number[]) => async (question: string) => {
+  const handleUpdateQuestion = (path: number[]) => async (question: string) => {
     "use server";
 
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -87,10 +87,10 @@ export const Maker = () => {
     revalidatePath('/');
   };
 
-  const handleEditActions = (path: number[]) => async () => {
+  const handleUpdateActions = (path: number[]) => async () => {
     "use server";
 
-    console.log("handleEditActions", path);
+    console.log("handleUpdateActions", path);
   };
 
   return (
@@ -100,8 +100,8 @@ export const Maker = () => {
       step={serverState}
       onAddNextQuestion={handleAddNextQuestion}
       onAddActions={handleAddActions}
-      onSaveQuestion={handleSaveQuestion}
-      onEditActions={handleEditActions}
+      onUpdateQuestion={handleUpdateQuestion}
+      onUpdateActions={handleUpdateActions}
     />
   );
 };
