@@ -44,7 +44,7 @@ let serverState: WizardProps["step"] = {
   ],
 };
 
-// serverState = {}; // CHANGE THIS
+serverState = {}; // CHANGE THIS
 
 const mutateQuestionAtPath = async (state: WizardProps["step"], path: number[], question: string) => {
   const buildPath = path.map(p => `answers[${p}]`).concat('question').join('.');
@@ -91,7 +91,9 @@ export const Maker = () => {
   const handleUpdateActions = (path: number[]) => async (data: ActionsStep) => {
     "use server";
 
-    console.log("handleUpdateActions - Update serverState - using path with data", path, data);
+    mutateAnswerAtPath(serverState, path, data);
+
+    revalidatePath('/');
   };
 
   return (

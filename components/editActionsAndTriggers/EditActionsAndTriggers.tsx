@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
   DialogFooter,
   Input,
 } from "@/components/ui";
@@ -53,7 +54,7 @@ export const EditActionsAndTriggers = ({ data, onUpdate }: Props) => {
 
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button className="absolute top-0 right-0" text="Edit" />
       </DialogTrigger>
       <DialogContent>
@@ -64,16 +65,18 @@ export const EditActionsAndTriggers = ({ data, onUpdate }: Props) => {
             {actions.map((action, index) =>
               <Input ref={lastActionRef} key={index} type="text" value={action} onChange={handleActionChange(index)} onKeyUp={handleKeyPress} />
             )}
-            <Button text="Add new row" size="sm" onClick={handleAddNewAction} />
-            <div>Triggers:</div>
+            <Button text="Add new row" variant="secondary" size="sm" onClick={handleAddNewAction} />
+            {/* <div>Triggers:</div>
             {data.triggers?.map((trigger, index) =>
               <Input key={index} type="text" defaultValue={trigger} />
             )}
-            <Button text="Add new row" size="sm" onClick={handleAddNewTrigger} />
+            <Button text="Add new row" size="sm" onClick={handleAddNewTrigger} /> */}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button text="Update" onClick={handleUpdate} />
+          <DialogClose asChild>
+            <Button text="Update" onClick={handleUpdate} />
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

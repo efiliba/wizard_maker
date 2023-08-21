@@ -15,7 +15,7 @@ export const NextQuestionOrActions = ({ onAddNextQuestion, onAddActions }: Props
     <div className="font-bold">
       Are there more questions or actions to perform?
       <Button text="Next question" onClick={handleAddNextQuestion} />
-      <Button text="Actions" onClick={handleAddActions} />
+      <Button text="Actions" variant="secondary" onClick={handleAddActions} />
     </div>
   );
 };
