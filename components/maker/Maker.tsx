@@ -78,7 +78,7 @@ export const Maker = () => {
   const handleUpdateQuestion = (path: number[]) => async (question: string) => {
     "use server";
 
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // await new Promise(resolve => setTimeout(resolve, 500));
 
     mutateQuestionAtPath(serverState, path, question);
 
@@ -96,6 +96,14 @@ export const Maker = () => {
     revalidatePath('/');
   };
 
+  const handleDeleteStep = (path: number[]) => async () => {
+    "use server";
+
+    mutateAnswerAtPath(serverState, path, {});
+
+    revalidatePath('/');
+  };
+
   return (
     <Wizard
       className="p-10"
@@ -105,6 +113,7 @@ export const Maker = () => {
       onAddActions={handleAddActions}
       onUpdateQuestion={handleUpdateQuestion}
       onUpdateActions={handleUpdateActions}
+      onDeleteStep={handleDeleteStep}
     />
   );
 };

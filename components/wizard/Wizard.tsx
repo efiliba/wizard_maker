@@ -1,5 +1,5 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui";
-import { Question, Actions, NextQuestionOrActions } from '@/components';
+import { Question, Actions, NextQuestionOrActions, DeleteStep } from '@/components';
 import { QuestionStep, ActionsStep, WizardStep } from "@/types";
 
 const mapQuestionByIndex = (index: number) => {
@@ -29,6 +29,7 @@ export type WizardProps = {
   onAddActions: (path: number[]) => () => Promise<void>,
   onUpdateQuestion: (path: number[]) => (question: string) => Promise<void>,
   onUpdateActions: (path: number[]) => (data: ActionsStep) => void,
+  onDeleteStep: (path: number[]) => () => void,
 };
 
 type AnswerProps = WizardProps & { step: WizardStep };
@@ -43,7 +44,8 @@ const Answer = ({
   onAddNextQuestion,
   onAddActions,
   onUpdateQuestion,
-  onUpdateActions
+  onUpdateActions,
+  onDeleteStep,
 }: AnswerProps) => {
   if (isActionsStep(step)) {
     return <Actions editable={editable} data={step} onUpdate={onUpdateActions(path!)} />;
@@ -59,6 +61,7 @@ const Answer = ({
         onAddActions={onAddActions}
         onUpdateQuestion={onUpdateQuestion}
         onUpdateActions={onUpdateActions}
+        onDeleteStep={onDeleteStep}
       />
     );
   }
@@ -75,14 +78,15 @@ export const Wizard = ({
   onAddActions,
   onUpdateQuestion,
   onUpdateActions,
-}: WizardProps) =>
+  onDeleteStep,
+}: WizardProps) => 
   <div className={`p-2 border ${className}`}>
     <Question editMode={editable} question={question!} onSave={onUpdateQuestion(path)} />
     <Accordion type={editable ? 'multiple' : 'single'} collapsible={!editable}>
       {answers
         .reduce(addQuestionTextAndStylesReducer('boolean'), [mapQuestionByIndex(0), mapQuestionByIndex(1)])
         .map((answer, index) =>
-          <AccordionItem key={index} value={`item${index}`}>
+          <AccordionItem className="relative" key={index} value={`item${index}`}>
             <AccordionTrigger className={`p-4 border ${answer.backgroundColor}`}>
               {answer.questionText}
             </AccordionTrigger>
@@ -95,8 +99,10 @@ export const Wizard = ({
                 onAddActions={onAddActions}
                 onUpdateQuestion={onUpdateQuestion}
                 onUpdateActions={onUpdateActions}
+                onDeleteStep={onDeleteStep}
               />
             </AccordionContent>
+            <DeleteStep onDelete={onDeleteStep(path.concat(index))} />
           </AccordionItem>
         )
       }
