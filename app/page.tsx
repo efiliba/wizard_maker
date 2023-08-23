@@ -1,11 +1,14 @@
 import { Maker } from "@/components";
-import { TodoList } from "@/app/_components/TodoList";
+import { TodoList } from "./_components/TodoList";
+import { serverClient } from "./_trpc/serverClient";
 
-export default function Home() {
+export default async function Home() {
+  const todos = await  serverClient.getTodos();
+ 
   return (
     <main>
       <Maker />
-      <TodoList />
+      <TodoList initialTodos={todos} />
     </main>
   )
 }
