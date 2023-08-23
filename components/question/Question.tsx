@@ -1,9 +1,9 @@
 "use client";
 
-import { ChangeEvent, useState, useTransition } from 'react';
-import { ReloadIcon } from '@radix-ui/react-icons';
+import { ChangeEvent, useState, useTransition } from "react";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
-import { Input } from '@/components/ui';
+import { Input } from "@/components/ui";
 
 type Props = {
   editMode?: false,

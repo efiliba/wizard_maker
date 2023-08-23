@@ -1,6 +1,6 @@
 "use client";
 
-import { Cross1Icon } from '@radix-ui/react-icons';
+import { Cross1Icon } from "@radix-ui/react-icons";
 
 export const DeleteStep = ({ onDelete }: { onDelete: () => void }) => {
   const handleDelete = () => onDelete();

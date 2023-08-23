@@ -1,5 +1,5 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui";
-import { Question, Actions, NextQuestionOrActions, DeleteStep } from '@/components';
+import { Question, Actions, NextQuestionOrActions, DeleteStep } from "@/components";
 import { QuestionStep, ActionsStep, WizardStep } from "@/types";
 
 const mapQuestionByIndex = (index: number) => {

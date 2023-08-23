@@ -1,1 +1,1 @@
-export * from './EditActionsAndTriggers';
+export * from "./EditActionsAndTriggers";
