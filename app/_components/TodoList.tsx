@@ -20,6 +20,8 @@ export const TodoList = ({ initialTodos }: { initialTodos: Awaited<ReturnType<(t
 
   return <div>
     <Button text="Add Todo" onClick={() => addTodo.mutate(Date.now().toString())} />
-    {JSON.stringify(getTodos.data, null, 2)}
+    <pre>
+      {JSON.stringify(getTodos.data, null, 2)}
+    </pre>
   </div>;
 }

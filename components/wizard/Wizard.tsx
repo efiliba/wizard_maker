@@ -82,7 +82,7 @@ export const Wizard = ({
 }: WizardProps) => 
   <div className={`p-2 border ${className}`}>
     <Question editMode={editable} question={question!} onSave={onUpdateQuestion(path)} />
-    <Accordion type={editable ? 'multiple' : 'single'} collapsible={!editable}>
+    <Accordion type={editable ? 'multiple' : 'single'}>
       {answers
         .reduce(addQuestionTextAndStylesReducer('boolean'), [mapQuestionByIndex(0), mapQuestionByIndex(1)])
         .map((answer, index) =>
