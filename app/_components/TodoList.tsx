@@ -12,7 +12,6 @@ export const TodoList = ({ initialTodos }: { initialTodos: Awaited<ReturnType<(t
      },
   });
 
-  // const getTodos = trpc.getTodos.useQuery(); // Prevent Warning: Text content did not match. Server
   const getTodos = trpc.getTodos.useQuery(undefined, {
      initialData: initialTodos,
      refetchOnMount: false,
@@ -21,6 +20,6 @@ export const TodoList = ({ initialTodos }: { initialTodos: Awaited<ReturnType<(t
 
   return <div>
     <Button text="Add Todo" onClick={() => addTodo.mutate(Date.now().toString())} />
-    {JSON.stringify(getTodos, null, 2)}
+    {JSON.stringify(getTodos.data, null, 2)}
   </div>;
 }
