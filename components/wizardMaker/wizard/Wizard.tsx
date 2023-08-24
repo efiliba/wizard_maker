@@ -1,4 +1,4 @@
-import { QuestionStep, ActionsStep, WizardStep } from "@/types";
+import { WizardData, ActionsStep, WizardStep } from "@/types";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui";
 import { Actions, DeleteStep, NextQuestionOrActions, Question } from "./components";
 
@@ -20,10 +20,10 @@ const addQuestionTextAndStylesReducer = (type: string) =>
     return paddedAnswers;
   };
 
-export type WizardProps = {
+type WizardProps = {
   className?: string,
   editable?: boolean,
-  step: QuestionStep,
+  step: WizardData,
   path?: number[],
   onAddNextQuestion: (path: number[]) => () => Promise<void>,
   onAddActions: (path: number[]) => () => Promise<void>,
@@ -35,7 +35,7 @@ export type WizardProps = {
 type AnswerProps = WizardProps & { step: WizardStep };
 
 const isActionsStep = (step: WizardStep): step is ActionsStep => "actions" in step;
-const isQuestionStep = (step: WizardStep): step is QuestionStep => "question" in step;
+const isQuestionStep = (step: WizardStep): step is WizardData => "question" in step;
 
 const Answer = ({
   editable,

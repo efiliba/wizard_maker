@@ -2,15 +2,17 @@
 
 import { Button } from "@/components/ui";
 
+import { WizardData } from "@/types";
 import { trpc } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/serverClient";
 
 type WizardSelectorProps = {
-  initialWizards: Awaited<ReturnType<(typeof serverClient)["getWizards"]>>
-  initialActiveWizard: Awaited<ReturnType<(typeof serverClient)["getActiveWizard"]>>
+  initialWizards: Awaited<ReturnType<(typeof serverClient)["getWizards"]>>,
+  initialActiveWizard: Awaited<ReturnType<(typeof serverClient)["getActiveWizard"]>>,
+  wizard: WizardData,
 };
 
-export const WizardSelector = ({ initialWizards, initialActiveWizard }: WizardSelectorProps) => {
+export const WizardSelector = ({ initialWizards, initialActiveWizard, wizard }: WizardSelectorProps) => {
   const getWizards = trpc.getWizards.useQuery(undefined, {
      initialData: initialWizards,
      refetchOnMount: false,
@@ -40,7 +42,7 @@ export const WizardSelector = ({ initialWizards, initialActiveWizard }: WizardSe
 
   const handleAddWizard = () => {
     const name = Date.now().toString();
-    addWizard.mutate({ name, createdBy: 'Eli', wizard: Date.now().toString() });
+    addWizard.mutate({ name, createdBy: 'Eli', wizard: JSON.stringify(wizard) });
   };
 
   return <div>

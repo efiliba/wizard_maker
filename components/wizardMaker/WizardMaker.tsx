@@ -1,12 +1,12 @@
 import { revalidatePath } from "next/cache";
 import { set } from "lodash";
 
+import { WizardData, ActionsStep } from "@/types";
 import { serverClient } from "@/app/_trpc/serverClient";
 import { WizardSelector } from "@/components";
-import { Wizard, WizardProps } from "./wizard";
-import { ActionsStep } from "@/types";
+import { Wizard } from "./wizard";
 
-let serverState: WizardProps["step"] = {
+let wizard: WizardData = {
   question: 'Was there a fall?',
   answers: [
     {
@@ -46,14 +46,14 @@ let serverState: WizardProps["step"] = {
   ],
 };
 
-serverState = {}; // CHANGE THIS
+wizard = {}; // CHANGE THIS
 
-const mutateQuestionAtPath = async (state: WizardProps["step"], path: number[], question: string) => {
+const mutateQuestionAtPath = async (state: WizardData, path: number[], question: string) => {
   const buildPath = path.map(p => `answers[${p}]`).concat('question').join('.');
   set(state, buildPath, question);
 };
 
-const mutateAnswerAtPath = async (state: WizardProps["step"], path: number[], answer: object) => {
+const mutateAnswerAtPath = async (state: WizardData, path: number[], answer: object) => {
   const buildPath = path.map(p => `answers[${p}]`).join('.');
   set(state, buildPath, answer);
 };
@@ -67,7 +67,7 @@ export const WizardMaker = async () => {
   
     // await new Promise(resolve => setTimeout(resolve, 500));
 
-    mutateAnswerAtPath(serverState, path, { question: '' });
+    mutateAnswerAtPath(wizard, path, { question: '' });
 
     revalidatePath('/');
   };
@@ -75,7 +75,7 @@ export const WizardMaker = async () => {
   const handleAddActions = (path: number[]) => async () => {
     "use server";
   
-    mutateAnswerAtPath(serverState, path, { actions: ['Some action'] });
+    mutateAnswerAtPath(wizard, path, { actions: ['Some action'] });
 
     revalidatePath('/');
   };
@@ -85,10 +85,10 @@ export const WizardMaker = async () => {
 
     // await new Promise(resolve => setTimeout(resolve, 500));
 
-    mutateQuestionAtPath(serverState, path, question);
+    mutateQuestionAtPath(wizard, path, question);
 
     // console.log("--------------------");
-    // console.log('UPDATED', JSON.stringify(serverState, null, 2));
+    // console.log('UPDATED', JSON.stringify(wizard, null, 2));
     
     revalidatePath('/');
   };
@@ -96,7 +96,7 @@ export const WizardMaker = async () => {
   const handleUpdateActions = (path: number[]) => async (data: ActionsStep) => {
     "use server";
 
-    mutateAnswerAtPath(serverState, path, data);
+    mutateAnswerAtPath(wizard, path, data);
 
     revalidatePath('/');
   };
@@ -104,7 +104,7 @@ export const WizardMaker = async () => {
   const handleDeleteStep = (path: number[]) => async () => {
     "use server";
 
-    mutateAnswerAtPath(serverState, path, {});
+    mutateAnswerAtPath(wizard, path, {});
 
     revalidatePath('/');
   };
@@ -114,15 +114,14 @@ export const WizardMaker = async () => {
       <Wizard
         className="p-10"
         editable
-        step={serverState}
+        step={wizard}
         onAddNextQuestion={handleAddNextQuestion}
         onAddActions={handleAddActions}
         onUpdateQuestion={handleUpdateQuestion}
         onUpdateActions={handleUpdateActions}
         onDeleteStep={handleDeleteStep}
       />
-      <WizardSelector initialWizards={wizards} initialActiveWizard={activeWizard} />
-
+      <WizardSelector initialWizards={wizards} initialActiveWizard={activeWizard} wizard={wizard} />
     </>
   );
 };
