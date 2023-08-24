@@ -1,14 +1,14 @@
 import { Maker } from "@/components";
-import { TodoList } from "./_components/TodoList";
+import { Wizards } from "./_components/Wizards";
 import { serverClient } from "./_trpc/serverClient";
 
 export default async function Home() {
-  const todos = await  serverClient.getTodos();
+  const wizards = await  serverClient.getWizards();
  
   return (
     <main>
       <Maker />
-      <TodoList initialTodos={todos} />
+      <Wizards initialWizards={wizards} />
     </main>
-  )
+  );
 }

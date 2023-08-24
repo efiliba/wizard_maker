@@ -1,7 +1,14 @@
+ import { sql } from "drizzle-orm";
  import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 
-export const todos = sqliteTable('todos', {
-  id: integer('id').primaryKey(),
-  content: text('content'),
-  done: integer('done'),
+export const wizards = sqliteTable('wizards', {
+  name: text('name').primaryKey(),
+  date: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+  createdBy: text('created_by'),
+  wizard: text('wizard'),
+  deleteFlag: integer('delete_flag').default(0),
+});
+
+export const activeWizard = sqliteTable('active_wizard', {
+  active: text('active').references(() => wizards.name),  // inline foreign key
 });
