@@ -1,7 +1,9 @@
 import { revalidatePath } from "next/cache";
 import { set } from "lodash";
 
-import { Wizard, WizardProps } from "@/components";
+import { serverClient } from "@/app/_trpc/serverClient";
+import { WizardSelector } from "@/components";
+import { Wizard, WizardProps } from "./wizard";
 import { ActionsStep } from "@/types";
 
 let serverState: WizardProps["step"] = {
@@ -56,7 +58,10 @@ const mutateAnswerAtPath = async (state: WizardProps["step"], path: number[], an
   set(state, buildPath, answer);
 };
 
-export const Maker = () => {
+export const WizardMaker = async () => {
+  const wizards = await serverClient.getWizards();
+  const activeWizard = await serverClient.getActiveWizard();
+
   const handleAddNextQuestion = (path: number[]) => async () => {
     "use server";
   
@@ -105,15 +110,19 @@ export const Maker = () => {
   };
 
   return (
-    <Wizard
-      className="p-10"
-      editable
-      step={serverState}
-      onAddNextQuestion={handleAddNextQuestion}
-      onAddActions={handleAddActions}
-      onUpdateQuestion={handleUpdateQuestion}
-      onUpdateActions={handleUpdateActions}
-      onDeleteStep={handleDeleteStep}
-    />
+    <>
+      <Wizard
+        className="p-10"
+        editable
+        step={serverState}
+        onAddNextQuestion={handleAddNextQuestion}
+        onAddActions={handleAddActions}
+        onUpdateQuestion={handleUpdateQuestion}
+        onUpdateActions={handleUpdateActions}
+        onDeleteStep={handleDeleteStep}
+      />
+      <WizardSelector initialWizards={wizards} initialActiveWizard={activeWizard} />
+
+    </>
   );
 };

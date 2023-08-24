@@ -1,6 +1,6 @@
-import { Checkbox } from "@/components/ui";
-import { EditActionsAndTriggers } from "@/components";
 import { ActionsStep } from "@/types";
+import { Checkbox } from "@/components/ui";
+import { EditActionsAndTriggers } from "./EditActionsAndTriggers";
 
 type Props = {
   editable?: boolean,

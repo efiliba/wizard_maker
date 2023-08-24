@@ -2,21 +2,26 @@
 
 import { Button } from "@/components/ui";
 
-import { trpc } from "../_trpc/client";
-import { serverClient } from "../_trpc/serverClient";
+import { trpc } from "@/app/_trpc/client";
+import { serverClient } from "@/app/_trpc/serverClient";
 
-type WizardProps = {
+type WizardSelectorProps = {
   initialWizards: Awaited<ReturnType<(typeof serverClient)["getWizards"]>>
+  initialActiveWizard: Awaited<ReturnType<(typeof serverClient)["getActiveWizard"]>>
 };
 
-export const Wizards = ({ initialWizards }: WizardProps) => {
+export const WizardSelector = ({ initialWizards, initialActiveWizard }: WizardSelectorProps) => {
   const getWizards = trpc.getWizards.useQuery(undefined, {
      initialData: initialWizards,
      refetchOnMount: false,
      refetchOnReconnect: false,
   });
 
-  const getActiveWizard = trpc.getActiveWizard.useQuery();
+  const getActiveWizard = trpc.getActiveWizard.useQuery(undefined, {
+    initialData: initialActiveWizard,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+ });
 
   const setActiveWizard = trpc.setActiveWizard.useMutation({
     onSettled: () => getActiveWizard.refetch()
