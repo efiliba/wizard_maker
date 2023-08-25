@@ -6,47 +6,49 @@ import { serverClient } from "@/app/_trpc/serverClient";
 import { WizardSelector } from "@/components";
 import { Wizard } from "./wizard";
 
-let wizard: WizardData = {
-  question: 'Was there a fall?',
-  answers: [
-    {
-      actions: [
-        'Call an ambulace.',
-        'File incident report on VWorker within 24 hours.'
-      ]
-    },
-    {
-      question: 'Was there a medication error?',
-      answers: [
-        {
-          question: 'Was it the wrong medication?',
-          answers: [
-            {
-              actions: [
-                'Run'
-              ],
-              triggers: [
-                'CallPolice'
-              ]
-            },
-            {
-              actions: [
-                'Be careful next time'
-              ],
-            }
-          ]
-        },
-        {
-          actions: [
-            'File incident report on VWorker.'
-          ]
-        }
-      ]
-    }
-  ],
-};
+// let wizard: WizardData = {
+//   question: 'Was there a fall?',
+//   answers: [
+//     {
+//       actions: [
+//         'Call an ambulace.',
+//         'File incident report on VWorker within 24 hours.'
+//       ]
+//     },
+//     {
+//       question: 'Was there a medication error?',
+//       answers: [
+//         {
+//           question: 'Was it the wrong medication?',
+//           answers: [
+//             {
+//               actions: [
+//                 'Run'
+//               ],
+//               triggers: [
+//                 'CallPolice'
+//               ]
+//             },
+//             {
+//               actions: [
+//                 'Be careful next time'
+//               ],
+//             }
+//           ]
+//         },
+//         {
+//           actions: [
+//             'File incident report on VWorker.'
+//           ]
+//         }
+//       ]
+//     }
+//   ],
+// };
 
-wizard = {}; // CHANGE THIS
+// wizard = {}; // CHANGE THIS
+
+const activeWizard = {};
 
 const mutateQuestionAtPath = async (state: WizardData, path: number[], question: string) => {
   const buildPath = path.map(p => `answers[${p}]`).concat('question').join('.');
@@ -60,14 +62,20 @@ const mutateAnswerAtPath = async (state: WizardData, path: number[], answer: obj
 
 export const WizardMaker = async () => {
   const wizards = await serverClient.getWizards();
-  const activeWizard = await serverClient.getActiveWizard();
+  const initialActiveWizard = await serverClient.getActiveWizard();
+
+  const handleActiveWizardChange = async (wizard: string) => {
+    "use server";
+
+    console.log("handleActiveWizardChange", wizard);
+  };
 
   const handleAddNextQuestion = (path: number[]) => async () => {
     "use server";
   
     // await new Promise(resolve => setTimeout(resolve, 500));
 
-    mutateAnswerAtPath(wizard, path, { question: '' });
+    mutateAnswerAtPath(activeWizard, path, { question: '' });
 
     revalidatePath('/');
   };
@@ -75,7 +83,7 @@ export const WizardMaker = async () => {
   const handleAddActions = (path: number[]) => async () => {
     "use server";
   
-    mutateAnswerAtPath(wizard, path, { actions: ['Some action'] });
+    mutateAnswerAtPath(activeWizard, path, { actions: ['Some action'] });
 
     revalidatePath('/');
   };
@@ -85,7 +93,7 @@ export const WizardMaker = async () => {
 
     // await new Promise(resolve => setTimeout(resolve, 500));
 
-    mutateQuestionAtPath(wizard, path, question);
+    mutateQuestionAtPath(activeWizard, path, question);
 
     // console.log("--------------------");
     // console.log('UPDATED', JSON.stringify(wizard, null, 2));
@@ -96,7 +104,7 @@ export const WizardMaker = async () => {
   const handleUpdateActions = (path: number[]) => async (data: ActionsStep) => {
     "use server";
 
-    mutateAnswerAtPath(wizard, path, data);
+    mutateAnswerAtPath(activeWizard, path, data);
 
     revalidatePath('/');
   };
@@ -104,7 +112,7 @@ export const WizardMaker = async () => {
   const handleDeleteStep = (path: number[]) => async () => {
     "use server";
 
-    mutateAnswerAtPath(wizard, path, {});
+    mutateAnswerAtPath(activeWizard, path, {});
 
     revalidatePath('/');
   };
@@ -114,14 +122,23 @@ export const WizardMaker = async () => {
       <Wizard
         className="p-10"
         editable
-        step={wizard}
+        step={activeWizard}
         onAddNextQuestion={handleAddNextQuestion}
         onAddActions={handleAddActions}
         onUpdateQuestion={handleUpdateQuestion}
         onUpdateActions={handleUpdateActions}
         onDeleteStep={handleDeleteStep}
       />
-      <WizardSelector initialWizards={wizards} initialActiveWizard={activeWizard} wizard={wizard} />
+         Server Active Wizard:
+    <pre>
+      {JSON.stringify(activeWizard, null, 2)}
+    </pre>
+      <WizardSelector
+        initialWizards={wizards}
+        initialActiveWizard={initialActiveWizard}
+        wizard={activeWizard}
+        onActiveWizardChange={handleActiveWizardChange}
+      />
     </>
   );
 };

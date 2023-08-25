@@ -1,18 +1,19 @@
 "use client";
 
-import { Button } from "@/components/ui";
-
-import { WizardData } from "@/types";
 import { trpc } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/serverClient";
+
+import { WizardData } from "@/types";
+import { LoadWizard, SaveWizard } from "./components";
 
 type WizardSelectorProps = {
   initialWizards: Awaited<ReturnType<(typeof serverClient)["getWizards"]>>,
   initialActiveWizard: Awaited<ReturnType<(typeof serverClient)["getActiveWizard"]>>,
   wizard: WizardData,
+  onActiveWizardChange: (wizard: string) => void,
 };
 
-export const WizardSelector = ({ initialWizards, initialActiveWizard, wizard }: WizardSelectorProps) => {
+export const WizardSelector = ({ initialWizards, initialActiveWizard, wizard, onActiveWizardChange }: WizardSelectorProps) => {
   const getWizards = trpc.getWizards.useQuery(undefined, {
      initialData: initialWizards,
      refetchOnMount: false,
@@ -29,10 +30,13 @@ export const WizardSelector = ({ initialWizards, initialActiveWizard, wizard }: 
     onSettled: () => getActiveWizard.refetch()
   });
 
-  const addWizard = trpc.addWizard.useMutation({
+  const saveWizard = trpc.addWizard.useMutation({
     onSettled: () => {
       getWizards.refetch();
       getActiveWizard.refetch();
+      // const { data: [{ wizard }] = [] } = await getActiveWizard.refetch();
+
+      // onActiveWizardChange(wizard || '{}');
     }
   });
 
@@ -40,16 +44,20 @@ export const WizardSelector = ({ initialWizards, initialActiveWizard, wizard }: 
   //   onSettled: () => getWizards.refetch()
   // });
 
-  const handleAddWizard = () => {
-    const name = Date.now().toString();
-    addWizard.mutate({ name, createdBy: 'Eli', wizard: JSON.stringify(wizard) });
+  const handleLoadWizard = (name: string) => {    
+    saveWizard.mutate({ name, createdBy: 'Eli', wizard: JSON.stringify(wizard) });
+  };
+
+  const handleSaveWizard = (name: string) => {    
+    saveWizard.mutate({ name, createdBy: 'Eli', wizard: JSON.stringify(wizard) });
   };
 
   return <div>
-    <Button text="Add Wizard" onClick={handleAddWizard} />
+    <LoadWizard wizards={getWizards.data} onLoad={handleLoadWizard} />
+    <SaveWizard onSave={handleSaveWizard} />
     {/* <Button text="Delete Last Todo" onClick={() => deleteTodo.mutate(1)} /> */}
     <br />
-    Active Wizard:
+    Client Active Wizard:
     <pre>
       {JSON.stringify(getActiveWizard.data, null, 2)}
     </pre>

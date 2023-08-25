@@ -13,9 +13,7 @@ const db = drizzle(sqlite);
 migrate(db, { migrationsFolder: 'drizzle' });
 
 export const appRouter = router({
-  getWizards: publicProcedure.query(async () => {
-    return await db.select().from(wizards).all();
-  }),
+  getWizards: publicProcedure.query(() => db.select().from(wizards)),
   addWizard: publicProcedure
     .input(z.object({
       name: z.string(),
@@ -27,18 +25,21 @@ export const appRouter = router({
         name: opts.input.name,
         createdBy: opts.input.createdBy,
         wizard: opts.input.wizard,
-      }).run();
+      });
       
-      const { changes } = await db.update(activeWizard).set({ active: opts.input.name }).run();
+      const { changes } = await db.update(activeWizard).set({ active: opts.input.name });
       if (changes === 0) {
-        await db.insert(activeWizard).values({ active: opts.input.name }).run();
+        await db.insert(activeWizard).values({ active: opts.input.name });
       }
 
       return true;
     }),
-  getActiveWizard: publicProcedure.query(async () => {
-    return await db.select().from(activeWizard).all();
-  }),
+  getActiveWizard: publicProcedure.query( () =>
+     db
+      .select({ wizard: wizards.wizard })
+      .from(wizards)
+      .rightJoin(activeWizard, eq(wizards.name, activeWizard.active))
+  ),
   setActiveWizard: publicProcedure
     .input(z.string())
     .mutation(async (opts) => {
