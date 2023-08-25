@@ -16,9 +16,7 @@ type WizardSelectorProps = {
 
 export const WizardSelector = ({ initialWizards, initialActiveWizard, wizard, onActiveWizardChange }: WizardSelectorProps) => {
   useEffect(() => {
-    console.log("Selector useEffect called", initialActiveWizard[0].wizard);
-    
-    onActiveWizardChange(initialActiveWizard[0].wizard!);
+    onActiveWizardChange(initialActiveWizard[0]?.wizard!);
   }, [initialActiveWizard, onActiveWizardChange]);
 
   const getWizards = trpc.getWizards.useQuery(undefined, {
@@ -32,9 +30,6 @@ export const WizardSelector = ({ initialWizards, initialActiveWizard, wizard, on
     refetchOnMount: false,
     refetchOnReconnect: false,
   });
-
-  // console.log("Selector initialActiveWizard", JSON.stringify(initialActiveWizard, null, 2));
-  // console.log("Selector getActiveWizard", JSON.stringify(getActiveWizard.data, null, 2));
 
   const setActiveWizard = trpc.setActiveWizard.useMutation({
     onSettled: () => {
@@ -59,7 +54,7 @@ export const WizardSelector = ({ initialWizards, initialActiveWizard, wizard, on
   const handleLoadWizard = (name: string) => {
     setActiveWizard.mutate(name);
 
-    onActiveWizardChange(getWizards.data.find(w => w.name = name)!.wizard);
+    onActiveWizardChange(getWizards.data.find(w => w.name === name)!.wizard);
   };
 
   const handleSaveWizard = (name: string) => {    
