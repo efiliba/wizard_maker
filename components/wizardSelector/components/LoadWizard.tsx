@@ -2,6 +2,7 @@
 
 import { useState, ChangeEvent, KeyboardEvent } from "react";
 
+import { WizardRecord } from "@/types";
 import {
   Button,
   Dialog,
@@ -20,7 +21,7 @@ import {
 } from "@/components/ui";
 
 type Props = {
-  wizards: any,
+  wizards: WizardRecord[],
   onLoad: (name: string) => void,
 };
 

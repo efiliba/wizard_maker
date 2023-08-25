@@ -9,6 +9,8 @@ export const wizards = sqliteTable('wizards', {
   deleteFlag: integer('delete_flag').default(0),
 });
 
+export type WizardRecord = typeof wizards.$inferSelect; // return type when queried
+
 export const activeWizard = sqliteTable('active_wizard', {
   active: text('active').references(() => wizards.name),  // inline foreign key
 });
