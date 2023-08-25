@@ -1,5 +1,5 @@
 import { revalidatePath } from "next/cache";
-import { set } from "lodash";
+import { set, assign } from "lodash";
 
 import { WizardData, ActionsStep } from "@/types";
 import { serverClient } from "@/app/_trpc/serverClient";
@@ -48,7 +48,7 @@ import { Wizard } from "./wizard";
 
 // wizard = {}; // CHANGE THIS
 
-const activeWizard = {};
+let activeWizard: WizardData = {};
 
 const mutateQuestionAtPath = async (state: WizardData, path: number[], question: string) => {
   const buildPath = path.map(p => `answers[${p}]`).concat('question').join('.');
@@ -63,13 +63,24 @@ const mutateAnswerAtPath = async (state: WizardData, path: number[], answer: obj
 export const WizardMaker = async () => {
   const wizards = await serverClient.getWizards();
   const initialActiveWizard = await serverClient.getActiveWizard();
+  
+  // activeWizard = initialActiveWizard[0].wizard || {};
 
-  const handleActiveWizardChange = async (wizard: string) => {
+  const handleActiveWizardChange = async (wizard: WizardData) => {
     "use server";
 
-    console.log("handleActiveWizardChange", wizard);
-  };
+    // assign(activeWizard, wizard);
+    // console.log("HERE --------------");
+  
+    activeWizard = {
+      ...wizard
+    };
 
+    // revalidatePath('/');
+  };
+  
+  // console.log("Maker initialActiveWizard", JSON.stringify(initialActiveWizard, null, 2));
+  
   const handleAddNextQuestion = (path: number[]) => async () => {
     "use server";
   
@@ -129,10 +140,10 @@ export const WizardMaker = async () => {
         onUpdateActions={handleUpdateActions}
         onDeleteStep={handleDeleteStep}
       />
-         Server Active Wizard:
-    <pre>
-      {JSON.stringify(activeWizard, null, 2)}
-    </pre>
+      Server state:
+      <pre>
+        {JSON.stringify(activeWizard, null, 2)}
+      </pre>
       <WizardSelector
         initialWizards={wizards}
         initialActiveWizard={initialActiveWizard}

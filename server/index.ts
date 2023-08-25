@@ -7,6 +7,8 @@ import z from "zod";
 import { publicProcedure, router } from "./trpc";
 import { wizards, activeWizard } from "@/db/schema";
 
+import { WizardData } from '@/types';
+
 const sqlite = new DataBase("sqlite.db");
 const db = drizzle(sqlite);
 
@@ -18,7 +20,7 @@ export const appRouter = router({
     .input(z.object({
       name: z.string(),
       createdBy: z.string(),
-      wizard: z.string(),
+      wizard: z.any(),
     }))
     .mutation(async (opts) => {
       await db.insert(wizards).values({

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { trpc } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/serverClient";
 
@@ -10,10 +11,16 @@ type WizardSelectorProps = {
   initialWizards: Awaited<ReturnType<(typeof serverClient)["getWizards"]>>,
   initialActiveWizard: Awaited<ReturnType<(typeof serverClient)["getActiveWizard"]>>,
   wizard: WizardData,
-  onActiveWizardChange: (wizard: string) => void,
+  onActiveWizardChange: (wizard: WizardData) => void,
 };
 
 export const WizardSelector = ({ initialWizards, initialActiveWizard, wizard, onActiveWizardChange }: WizardSelectorProps) => {
+  useEffect(() => {
+    console.log("Selector useEffect called", initialActiveWizard[0].wizard);
+    
+    onActiveWizardChange(initialActiveWizard[0].wizard!);
+  }, [initialActiveWizard, onActiveWizardChange]);
+
   const getWizards = trpc.getWizards.useQuery(undefined, {
      initialData: initialWizards,
      refetchOnMount: false,
@@ -24,10 +31,15 @@ export const WizardSelector = ({ initialWizards, initialActiveWizard, wizard, on
     initialData: initialActiveWizard,
     refetchOnMount: false,
     refetchOnReconnect: false,
- });
+  });
+
+  // console.log("Selector initialActiveWizard", JSON.stringify(initialActiveWizard, null, 2));
+  // console.log("Selector getActiveWizard", JSON.stringify(getActiveWizard.data, null, 2));
 
   const setActiveWizard = trpc.setActiveWizard.useMutation({
-    onSettled: () => getActiveWizard.refetch()
+    onSettled: () => {
+      getActiveWizard.refetch();
+    }
   });
 
   const saveWizard = trpc.addWizard.useMutation({
@@ -44,26 +56,29 @@ export const WizardSelector = ({ initialWizards, initialActiveWizard, wizard, on
   //   onSettled: () => getWizards.refetch()
   // });
 
-  const handleLoadWizard = (name: string) => {    
-    saveWizard.mutate({ name, createdBy: 'Eli', wizard: JSON.stringify(wizard) });
+  const handleLoadWizard = (name: string) => {
+    setActiveWizard.mutate(name);
+
+    onActiveWizardChange(getWizards.data.find(w => w.name = name)!.wizard);
   };
 
   const handleSaveWizard = (name: string) => {    
-    saveWizard.mutate({ name, createdBy: 'Eli', wizard: JSON.stringify(wizard) });
+    saveWizard.mutate({ name, createdBy: 'Eli', wizard });
   };
 
-  return <div>
-    <LoadWizard wizards={getWizards.data} onLoad={handleLoadWizard} />
-    <SaveWizard onSave={handleSaveWizard} />
-    {/* <Button text="Delete Last Todo" onClick={() => deleteTodo.mutate(1)} /> */}
-    <br />
-    Client Active Wizard:
-    <pre>
-      {JSON.stringify(getActiveWizard.data, null, 2)}
-    </pre>
-    Wizards:
-    <pre>
-      {JSON.stringify(getWizards.data, null, 2)}
-    </pre>
-  </div>;
-}
+  return (
+    <div>
+      <LoadWizard wizards={getWizards.data} onLoad={handleLoadWizard} />
+      <SaveWizard onSave={handleSaveWizard} />
+      <br />
+      Active Wizard:
+      <pre>
+        {JSON.stringify(getActiveWizard.data[0]?.wizard, null, 2)}
+      </pre>
+      Wizards:
+      <pre>
+        {JSON.stringify(getWizards.data, null, 2)}
+      </pre>
+    </div>
+  );
+};

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ChangeEvent, KeyboardEvent } from "react";
+import { useState } from "react";
 
 import { WizardRecord } from "@/types";
 import {
@@ -18,6 +18,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui";
 
 type Props = {
@@ -26,25 +30,17 @@ type Props = {
 };
 
 export const LoadWizard = ({ wizards, onLoad }: Props) => {
-  const [open, setOpen] = useState(false);
+  const [selectedWizard, setSelectedWizard] = useState<string>();
 
-  const [wizardName, setWizardName] = useState('');
+  const handleChange = (name: string) => setSelectedWizard(name);
 
-  const handleChange = ({ target }: ChangeEvent<HTMLInputElement>) => setWizardName(target.value);
-
-  const handleLoad = () => onLoad(wizardName.trim());
-
-  const handleKeyPress = ({ key }: KeyboardEvent<HTMLInputElement>) => {
-    if (key === "Enter" && wizardName.trim().length > 0) {
-      handleLoad();
-      setOpen(false);
-    }
+  const handleLoad = () => {
+    onLoad(selectedWizard!);
+    setSelectedWizard(undefined);
   };
 
-  const handleOpenChange = () => setOpen(toggle => !toggle);;
-
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog>
       <DialogTrigger asChild>
         <Button text="Load Wizard" />
       </DialogTrigger>
@@ -52,24 +48,30 @@ export const LoadWizard = ({ wizards, onLoad }: Props) => {
         <DialogHeader>
           <DialogTitle>Load Wizard</DialogTitle>
           <DialogDescription>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a wizard to load:" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
-              </SelectContent>
-            </Select>
-            <pre>
-              {JSON.stringify(wizards, null, 2)}
-            </pre>
+            <TooltipProvider delayDuration={0}>
+              <Select onValueChange={handleChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a wizard to load:" />
+                </SelectTrigger>
+                <SelectContent>
+                  {wizards.map(({ name, wizard }) =>
+                    <SelectItem key={name} value={name}>
+                      <Tooltip >
+                        <TooltipTrigger>{name}</TooltipTrigger>
+                        <TooltipContent side="right">
+                          <pre>{wizard.question}</pre>
+                        </TooltipContent>
+                      </Tooltip>
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </TooltipProvider>
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button text="Load" disabled={wizardName.trim().length === 0} onClick={handleLoad} />
+            <Button text="Load" disabled={!selectedWizard} onClick={handleLoad} />
           </DialogClose>
         </DialogFooter>
       </DialogContent>
