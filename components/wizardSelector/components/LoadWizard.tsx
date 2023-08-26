@@ -46,7 +46,7 @@ export const LoadWizard = ({ wizards, onLoad }: Props) => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Load Wizard</DialogTitle>
+          <DialogTitle className="mb-2">Load Wizard</DialogTitle>
           <DialogDescription>
             <TooltipProvider delayDuration={0}>
               <Select onValueChange={handleChange}>

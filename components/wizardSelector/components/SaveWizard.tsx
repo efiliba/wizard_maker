@@ -45,7 +45,7 @@ export const SaveWizard = ({ onSave }: Props) => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Save Wizard</DialogTitle>
+          <DialogTitle className="mb-2">Save Wizard</DialogTitle>
           <DialogDescription>
             <Label htmlFor="name">Name:</Label>
             <Input

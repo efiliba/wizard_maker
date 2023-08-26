@@ -59,7 +59,7 @@ export const EditActionsAndTriggers = ({ data, onUpdate }: Props) => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Update the actions and triggers.</DialogTitle>
+          <DialogTitle className="mb-2">Update the actions and triggers.</DialogTitle>
           <DialogDescription>
             <div>Actions:</div>
             {actions.map((action, index) =>
@@ -72,7 +72,13 @@ export const EditActionsAndTriggers = ({ data, onUpdate }: Props) => {
                 onKeyUp={handleKeyPress}
               />
             )}
-            <Button text="Add new row" variant="secondary" size="sm" onClick={handleAddNewAction} />
+            <Button
+              className="mt-2"
+              text="Add new row"
+              variant="secondary"
+              size="sm"
+              onClick={handleAddNewAction}
+            />
             {/* <div>Triggers:</div>
             {data.triggers?.map((trigger, index) =>
               <Input key={index} type="text" defaultValue={trigger} />
