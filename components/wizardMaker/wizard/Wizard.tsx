@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { WizardData, ActionsStep, WizardStep } from "@/types";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui";
 import { Actions, DeleteStep, NextQuestionOrActions, Question } from "./components";
@@ -79,8 +80,8 @@ export const Wizard = ({
   onUpdateQuestion,
   onUpdateActions,
   onDeleteStep,
-}: WizardProps) => 
-  <div className={`p-2 border ${className}`}>
+}: WizardProps) =>
+  <div className={cn('pl-2 border-l-[.5px] border-yellow-200', className)}>
     <Question editMode={editable} question={question!} onSave={onUpdateQuestion(path)} />
     <Accordion type={editable ? 'multiple' : 'single'}>
       {answers

@@ -6,49 +6,48 @@ import { serverClient } from "@/app/_trpc/serverClient";
 import { WizardSelector } from "@/components";
 import { Wizard } from "./wizard";
 
-// let wizard: WizardData = {
-//   question: 'Was there a fall?',
-//   answers: [
-//     {
-//       actions: [
-//         'Call an ambulace.',
-//         'File incident report on VWorker within 24 hours.'
-//       ]
-//     },
-//     {
-//       question: 'Was there a medication error?',
-//       answers: [
-//         {
-//           question: 'Was it the wrong medication?',
-//           answers: [
-//             {
-//               actions: [
-//                 'Run'
-//               ],
-//               triggers: [
-//                 'CallPolice'
-//               ]
-//             },
-//             {
-//               actions: [
-//                 'Be careful next time'
-//               ],
-//             }
-//           ]
-//         },
-//         {
-//           actions: [
-//             'File incident report on VWorker.'
-//           ]
-//         }
-//       ]
-//     }
-//   ],
-// };
+let activeWizard: WizardData = {
+  question: 'Was there a fall?',
+  answers: [
+    {
+      actions: [
+        'Call an ambulace.',
+        'File incident report on VWorker within 24 hours.'
+      ]
+    },
+    {
+      question: 'Was there a medication error?',
+      answers: [
+        {
+          question: 'Was it the wrong medication?',
+          answers: [
+            {
+              actions: [
+                'Run'
+              ],
+              triggers: [
+                'CallPolice'
+              ]
+            },
+            {
+              actions: [
+                'Be careful next time'
+              ],
+            }
+          ]
+        },
+        {
+          actions: [
+            'File incident report on VWorker.'
+          ]
+        }
+      ]
+    }
+  ],
+};
 
-// wizard = {}; // CHANGE THIS
+activeWizard = {}; // CHANGE THIS
 
-let activeWizard: WizardData = {};
 
 const mutateQuestionAtPath = async (state: WizardData, path: number[], question: string) => {
   const buildPath = path.map(p => `answers[${p}]`).concat('question').join('.');
@@ -64,16 +63,30 @@ export const WizardMaker = async () => {
   const wizards = await serverClient.getWizards();
   const initialActiveWizard = await serverClient.getActiveWizard();
 
-  const handleActiveWizardChange = async (wizard: WizardData) => {
+  const handleActiveWizardChange = async (wizard: WizardData, refresh?: boolean) => {
     "use server";
 
-    activeWizard = {
-      ...wizard
-    };
+    console.log("handleActiveWizardChange", refresh);
+    console.log("handleActiveWizardChange - Before", activeWizard);
 
-    // revalidatePath('/');
+    // activeWizard = {
+    //   ...wizard
+    // };
+
+    console.log("handleActiveWizardChange - After", activeWizard);
+    
+    if (refresh) {
+      // window.location.reload();
+    //   await new Promise(resolve => setTimeout(resolve, 5000));
+
+    console.log("handleActiveWizardChange", "--- revalidatePath");
+
+    //   revalidatePath('/');
+    }
   };
-  
+
+  console.log("activeWizard", activeWizard);
+
   const handleAddNextQuestion = (path: number[]) => async () => {
     "use server";
   
@@ -119,7 +132,7 @@ export const WizardMaker = async () => {
   return (
     <>
       <Wizard
-        className="p-10"
+        className="p-2 border-l-0"
         editable
         step={activeWizard}
         onAddNextQuestion={handleAddNextQuestion}
@@ -133,6 +146,7 @@ export const WizardMaker = async () => {
         {JSON.stringify(activeWizard, null, 2)}
       </pre>
       <WizardSelector
+        className="p-2"
         initialWizards={wizards}
         initialActiveWizard={initialActiveWizard}
         wizard={activeWizard}
