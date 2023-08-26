@@ -6,48 +6,7 @@ import { serverClient } from "@/app/_trpc/serverClient";
 import { WizardSelector } from "@/components";
 import { Wizard } from "./wizard";
 
-let activeWizard: WizardData = {
-  question: 'Was there a fall?',
-  answers: [
-    {
-      actions: [
-        'Call an ambulace.',
-        'File incident report on VWorker within 24 hours.'
-      ]
-    },
-    {
-      question: 'Was there a medication error?',
-      answers: [
-        {
-          question: 'Was it the wrong medication?',
-          answers: [
-            {
-              actions: [
-                'Run'
-              ],
-              triggers: [
-                'CallPolice'
-              ]
-            },
-            {
-              actions: [
-                'Be careful next time'
-              ],
-            }
-          ]
-        },
-        {
-          actions: [
-            'File incident report on VWorker.'
-          ]
-        }
-      ]
-    }
-  ],
-};
-
-activeWizard = {}; // CHANGE THIS
-
+let activeWizard = {};
 
 const mutateQuestionAtPath = async (state: WizardData, path: number[], question: string) => {
   const buildPath = path.map(p => `answers[${p}]`).concat('question').join('.');
@@ -60,32 +19,20 @@ const mutateAnswerAtPath = async (state: WizardData, path: number[], answer: obj
 };
 
 export const WizardMaker = async () => {
-  const wizards = await serverClient.getWizards();
+  const initialWizards = await serverClient.getWizards();
   const initialActiveWizard = await serverClient.getActiveWizard();
 
-  const handleActiveWizardChange = async (wizard: WizardData, refresh?: boolean) => {
+  const handleActiveWizardChange = async (wizard: WizardData) => {
     "use server";
 
-    console.log("handleActiveWizardChange", refresh);
-    console.log("handleActiveWizardChange - Before", activeWizard);
+    if (JSON.stringify(wizard) !== JSON.stringify(activeWizard)) {
+      activeWizard = {
+        ...wizard
+      };
 
-    // activeWizard = {
-    //   ...wizard
-    // };
-
-    console.log("handleActiveWizardChange - After", activeWizard);
-    
-    if (refresh) {
-      // window.location.reload();
-    //   await new Promise(resolve => setTimeout(resolve, 5000));
-
-    console.log("handleActiveWizardChange", "--- revalidatePath");
-
-    //   revalidatePath('/');
+      revalidatePath('/');
     }
   };
-
-  console.log("activeWizard", activeWizard);
 
   const handleAddNextQuestion = (path: number[]) => async () => {
     "use server";
@@ -131,6 +78,13 @@ export const WizardMaker = async () => {
 
   return (
     <>
+      <WizardSelector
+        className="p-2"
+        initialWizards={initialWizards}
+        selectedWizard={initialActiveWizard}
+        wizard={activeWizard}
+        onActiveWizardChange={handleActiveWizardChange}
+      />
       <Wizard
         className="p-2 border-l-0"
         editable
@@ -140,17 +94,6 @@ export const WizardMaker = async () => {
         onUpdateQuestion={handleUpdateQuestion}
         onUpdateActions={handleUpdateActions}
         onDeleteStep={handleDeleteStep}
-      />
-      Server state:
-      <pre>
-        {JSON.stringify(activeWizard, null, 2)}
-      </pre>
-      <WizardSelector
-        className="p-2"
-        initialWizards={wizards}
-        initialActiveWizard={initialActiveWizard}
-        wizard={activeWizard}
-        onActiveWizardChange={handleActiveWizardChange}
       />
     </>
   );
