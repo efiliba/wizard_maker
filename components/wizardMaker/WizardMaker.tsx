@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { set } from "lodash";
 
 import { WizardData, ActionsStep } from "@/types";
-import { serverClient } from "@/app/_trpc/serverClient";
+// import { serverClient } from "@/app/_trpc/serverClient";
 import { WizardSelector } from "@/components";
 import { Wizard } from "./wizard";
 
@@ -19,8 +19,8 @@ const mutateAnswerAtPath = async (state: WizardData, path: number[], answer: obj
 };
 
 export const WizardMaker = async () => {
-  const initialWizards = await serverClient.getWizards();
-  const initialActiveWizard = await serverClient.getActiveWizard();
+  // const initialWizards = await serverClient.getWizards();
+  // const initialActiveWizard = await serverClient.getActiveWizard();
 
   const handleActiveWizardChange = async (wizard: WizardData) => {
     "use server";
