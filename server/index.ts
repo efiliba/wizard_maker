@@ -33,8 +33,6 @@ export const appRouter = router({
       });
       
       const result = await db.update(ActiveWizardTable).set({ active: opts.input.name });
-      console.log("Check result to determine if any records where added - upsert", JSON.stringify(result));
-      
       if (result.rowCount === 0) {
         await db.insert(ActiveWizardTable).values({ active: opts.input.name });
       }

@@ -18,7 +18,7 @@ const mutateAnswerAtPath = async (state: WizardData, path: number[], answer: obj
   set(state, buildPath, answer);
 };
 
-export const WizardMaker = async () => {
+export const WizardMaker = async ({ editMode }: { editMode: boolean }) => {
   const initialWizards = await serverClient.getWizards();
   const initialActiveWizard = await serverClient.getActiveWizard();
 
@@ -78,16 +78,18 @@ export const WizardMaker = async () => {
 
   return (
     <>
-      <WizardSelector
-        className="p-2"
-        initialWizards={initialWizards}
-        selectedWizard={initialActiveWizard}
-        wizard={activeWizard}
-        onActiveWizardChange={handleActiveWizardChange}
-      />
+      {editMode &&
+        <WizardSelector
+          className="p-2"
+          initialWizards={initialWizards}
+          selectedWizard={initialActiveWizard}
+          wizard={activeWizard}
+          onActiveWizardChange={handleActiveWizardChange}
+        />
+      }
       <Wizard
         className="p-2 border-l-0"
-        editable
+        editable={editMode}
         step={activeWizard}
         onAddNextQuestion={handleAddNextQuestion}
         onAddActions={handleAddActions}

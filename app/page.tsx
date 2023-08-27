@@ -1,9 +1,9 @@
 import { WizardMaker } from "@/components";
 
-export default async function Home() {
+export default function Page({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
   return (
     <main>
-      <WizardMaker />
+      <WizardMaker editMode={searchParams?.edit === 'true'}/>
     </main>
   );
 }
