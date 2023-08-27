@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { useState, ReactNode } from "react";
 
+import { getDomain } from "@/lib/utils";
 import { trpc } from "./client";
 
 export default function Provider({ children }: { children: ReactNode }) {
@@ -13,7 +14,7 @@ export default function Provider({ children }: { children: ReactNode }) {
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: "http://localhost:3000/api/trpc",
+          url: `${getDomain()}/api/trpc`,
         }),
       ],
     })
