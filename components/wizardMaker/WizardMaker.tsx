@@ -78,13 +78,13 @@ export const WizardMaker = async () => {
 
   return (
     <>
-      <WizardSelector
+      {/* <WizardSelector
         className="p-2"
         initialWizards={initialWizards}
         selectedWizard={initialActiveWizard}
         wizard={activeWizard}
         onActiveWizardChange={handleActiveWizardChange}
-      />
+      /> */}
       <Wizard
         className="p-2 border-l-0"
         editable
