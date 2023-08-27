@@ -42,7 +42,8 @@ export const WizardSelector = ({
   const handleLoadWizard = (name: string) => {
     setActiveWizard.mutate(name);
 
-    // onActiveWizardChange(getWizards.data.find(w => w.name === name)!.wizard);
+    // @ts-ignore
+    onActiveWizardChange(getWizards.data.find(w => w.name === name)!.wizard);
   };
 
   const handleSaveWizard = (name: string) => {    

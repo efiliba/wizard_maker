@@ -1,21 +1,24 @@
 import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { migrate  } from "drizzle-orm/better-sqlite3/migrator";
-import DataBase from "better-sqlite3";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon, neonConfig } from "@neondatabase/serverless";
+// import { migrate  } from "drizzle-orm/better-sqlite3/migrator";
+// import DataBase from "better-sqlite3";
 import z from "zod";
 
 import { publicProcedure, router } from "./trpc";
-import { wizards, activeWizard } from "@/db/schema";
-
+import { WizardsTable, ActiveWizardTable } from "@/db/schema";
 import { WizardData } from '@/types';
 
-const sqlite = new DataBase("sqlite.db");
-const db = drizzle(sqlite);
+neonConfig.fetchConnectionCache = true;
 
-migrate(db, { migrationsFolder: 'drizzle' });
+// const sqlite = new DataBase("sqlite.db");
+const sql = neon(process.env.DATABASE_URL!);
+const db = drizzle(sql);
+
+// migrate(db, { migrationsFolder: 'drizzle' });
 
 export const appRouter = router({
-  getWizards: publicProcedure.query(() => db.select().from(wizards)),
+  getWizards: publicProcedure.query(() => db.select().from(WizardsTable)),
   addWizard: publicProcedure
     .input(z.object({
       name: z.string(),
@@ -23,33 +26,35 @@ export const appRouter = router({
       wizard: z.any(),
     }))
     .mutation(async (opts) => {
-      await db.insert(wizards).values({
+      await db.insert(WizardsTable).values({
         name: opts.input.name,
         createdBy: opts.input.createdBy,
         wizard: opts.input.wizard,
       });
       
-      const { changes } = await db.update(activeWizard).set({ active: opts.input.name });
-      if (changes === 0) {
-        await db.insert(activeWizard).values({ active: opts.input.name });
+      const result = await db.update(ActiveWizardTable).set({ active: opts.input.name });
+      console.log("Check result to determine if any records where added - upsert", JSON.stringify(result));
+      
+      if (result.rowCount === 0) {
+        await db.insert(ActiveWizardTable).values({ active: opts.input.name });
       }
 
       return true;
     }),
-  getActiveWizard: publicProcedure.query( () =>
+  getActiveWizard: publicProcedure.query(() =>
      db
-      .select({ wizard: wizards.wizard })
-      .from(wizards)
-      .rightJoin(activeWizard, eq(wizards.name, activeWizard.active))
+      .select({ wizard: WizardsTable.wizard })
+      .from(WizardsTable)
+      .rightJoin(ActiveWizardTable, eq(WizardsTable.name, ActiveWizardTable.active))
   ),
   setActiveWizard: publicProcedure
     .input(z.string())
     .mutation(async (opts) => {
-      await db.update(activeWizard).set({ active: opts.input }).run();
+      await db.update(ActiveWizardTable).set({ active: opts.input });
       return true;
     }),
   // deleteWizard: publicProcedure.input(z.number()).mutation(async (opts) => {
-  //   await db.update(wizards).set({ done: opts.input }).where(eq(wizards.id, 1)).run();
+  //   await db.update(WizardsTable).set({ done: opts.input }).where(eq(WizardsTable.id, 1)).run();
   //   return true;
   // }),
 });
