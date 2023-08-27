@@ -10,6 +10,7 @@ import { LoadWizard, SaveWizard } from "./components";
 
 type WizardSelectorProps = {
   className?: string,
+  editMode: boolean,
   initialWizards: Awaited<ReturnType<(typeof serverClient)["getWizards"]>>,
   selectedWizard: Awaited<ReturnType<(typeof serverClient)["getActiveWizard"]>>,
   wizard: WizardData,
@@ -18,6 +19,7 @@ type WizardSelectorProps = {
 
 export const WizardSelector = ({
   className,
+  editMode,
   initialWizards,
   selectedWizard,
   wizard,
@@ -53,7 +55,7 @@ export const WizardSelector = ({
   return (
     <div className={cn('sticky top-0 z-10 grid grid-flow-col justify-end gap-x-2 bg-black', className)}>
       <LoadWizard wizards={getWizards.data} onLoad={handleLoadWizard} />
-      <SaveWizard onSave={handleSaveWizard} />
+      {editMode && <SaveWizard onSave={handleSaveWizard} />}
     </div>
   );
 };

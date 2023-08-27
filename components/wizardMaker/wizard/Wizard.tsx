@@ -67,6 +67,10 @@ const Answer = ({
     );
   }
 
+  if (!editable) {
+    return <div>Unfinished path found in wizard!</div>
+  }
+
   return <NextQuestionOrActions onAddNextQuestion={onAddNextQuestion(path!)} onAddActions={onAddActions(path!)} />;
 };
 
@@ -81,7 +85,7 @@ export const Wizard = ({
   onUpdateActions,
   onDeleteStep,
 }: WizardProps) =>
-  <div className={cn('pl-2 border-l-[.5px] border-yellow-200', className)}>
+  <div className={cn(`pl-2 border-l-[.5px]${editable ? ' border-yellow-200' : ''}`, className)}>
     <Question editMode={editable} question={question!} onSave={onUpdateQuestion(path)} />
     <Accordion type={editable ? 'multiple' : 'single'}>
       {answers
@@ -103,7 +107,7 @@ export const Wizard = ({
                 onDeleteStep={onDeleteStep}
               />
             </AccordionContent>
-            <DeleteStep onDelete={onDeleteStep(path.concat(index))} />
+            {editable && <DeleteStep onDelete={onDeleteStep(path.concat(index))} />}
           </AccordionItem>
         )
       }
