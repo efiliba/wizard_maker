@@ -1,0 +1,87 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "id": "cc96f4b0-54d2-42e8-9c04-ab9ee218d3b9",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "active_wizard": {
+      "name": "active_wizard",
+      "schema": "",
+      "columns": {
+        "active": {
+          "name": "active",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "active_wizard_active_wizards_name_fk": {
+          "name": "active_wizard_active_wizards_name_fk",
+          "tableFrom": "active_wizard",
+          "tableTo": "wizards",
+          "columnsFrom": [
+            "active"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "wizards": {
+      "name": "wizards",
+      "schema": "",
+      "columns": {
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "wizard": {
+          "name": "wizard",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "delete_flag": {
+          "name": "delete_flag",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

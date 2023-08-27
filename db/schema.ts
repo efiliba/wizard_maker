@@ -1,18 +1,17 @@
- import { sql } from "drizzle-orm";
- import { sqliteTable, integer, text, blob } from "drizzle-orm/sqlite-core";
+import { pgTable, text, timestamp, boolean, json } from "drizzle-orm/pg-core";
 
- import { WizardData } from '@/types';
+import { WizardData } from '@/types';
 
-export const wizards = sqliteTable('wizards', {
-  name: text('name').notNull().primaryKey(),
-  date: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+export const wizards = pgTable('wizards', {
+  name: text('name').primaryKey().notNull(),
+  date: timestamp('created_at').defaultNow(),
   createdBy: text('created_by').notNull(),
-  wizard: blob('wizard', { mode: 'json' }).notNull().$type<WizardData>(),
-  deleteFlag: integer('delete_flag', { mode: 'boolean' }).notNull().default(false),
+  wizard: json('wizard').$type<WizardData>().notNull(),
+  deleteFlag: boolean('delete_flag').default(false).notNull(),
 });
 
 export type WizardRecord = typeof wizards.$inferSelect; // return type when queried
 
-export const activeWizard = sqliteTable('active_wizard', {
+export const activeWizard = pgTable('active_wizard', {
   active: text('active').notNull().references(() => wizards.name),  // inline foreign key
 });
