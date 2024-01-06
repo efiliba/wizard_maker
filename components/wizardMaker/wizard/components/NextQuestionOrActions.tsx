@@ -14,8 +14,8 @@ export const NextQuestionOrActions = ({ onAddNextQuestion, onAddActions }: Props
   return (
     <div className="grid grid-flow-col items-center justify-start gap-x-2 font-bold">
       Are there more questions or actions to perform?
-      <Button text="Next question" onClick={handleAddNextQuestion} />
-      <Button text="Actions" variant="secondary" onClick={handleAddActions} />
+      <Button onClick={handleAddNextQuestion}>Next question</Button>
+      <Button variant="secondary" onClick={handleAddActions}>Actions</Button>
     </div>
   );
 };

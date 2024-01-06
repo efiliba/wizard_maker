@@ -42,7 +42,7 @@ export const LoadWizard = ({ wizards, onLoad }: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button text="Load Wizard" variant="secondary" />
+        <Button variant="secondary">Load Wizard</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -71,7 +71,7 @@ export const LoadWizard = ({ wizards, onLoad }: Props) => {
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button text="Load" disabled={!selectedWizard} onClick={handleLoad} />
+            <Button disabled={!selectedWizard} onClick={handleLoad}>Load</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>

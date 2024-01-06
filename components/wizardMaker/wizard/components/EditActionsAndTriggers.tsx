@@ -55,7 +55,7 @@ export const EditActionsAndTriggers = ({ data, onUpdate }: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button text="Edit" />
+        <Button>Edit</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -74,11 +74,12 @@ export const EditActionsAndTriggers = ({ data, onUpdate }: Props) => {
             )}
             <Button
               className="mt-2"
-              text="Add new row"
               variant="secondary"
               size="sm"
               onClick={handleAddNewAction}
-            />
+            >
+              Add new row
+            </Button>
             {/* <div>Triggers:</div>
             {data.triggers?.map((trigger, index) =>
               <Input key={index} type="text" defaultValue={trigger} />
@@ -88,7 +89,7 @@ export const EditActionsAndTriggers = ({ data, onUpdate }: Props) => {
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button text="Update" onClick={handleUpdate} />
+            <Button onClick={handleUpdate}>Update</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>

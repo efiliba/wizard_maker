@@ -41,7 +41,7 @@ export const SaveWizard = ({ onSave }: Props) => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button text="Save Wizard" />
+        <Button>Save Wizard</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -60,7 +60,7 @@ export const SaveWizard = ({ onSave }: Props) => {
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button text="Save" disabled={wizardName.trim().length === 0} onClick={handleSave} />
+            <Button disabled={wizardName.trim().length === 0} onClick={handleSave}>Save</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
