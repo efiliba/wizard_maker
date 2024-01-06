@@ -1,4 +1,4 @@
-import { ActionsStep } from "@/types";
+import type { ActionsStep } from "@/types";
 import { Checkbox } from "@/components/ui";
 import { EditActionsAndTriggers } from "./EditActionsAndTriggers";
 

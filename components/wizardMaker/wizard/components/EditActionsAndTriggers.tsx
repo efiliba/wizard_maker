@@ -14,7 +14,7 @@ import {
   DialogFooter,
   Input,
 } from "@/components/ui";
-import { ActionsStep } from "@/types";
+import type { ActionsStep } from "@/types";
 import { nextTick } from "process";
 
 type Props = {

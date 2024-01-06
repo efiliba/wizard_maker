@@ -5,7 +5,7 @@ import { trpc } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/serverClient";
 
 import { cn } from "@/lib/utils";
-import { WizardData } from "@/types";
+import type { WizardData } from "@/types";
 import { LoadWizard, SaveWizard } from "./components";
 
 type WizardSelectorProps = {
@@ -26,13 +26,13 @@ export const WizardSelector = ({
   onActiveWizardChange
 }: WizardSelectorProps) => {
   useEffect(() => {
-    onActiveWizardChange(selectedWizard[0]?.wizard!);
-  }, []);
+    onActiveWizardChange(selectedWizard.wizard!);
+  }, [ onActiveWizardChange, selectedWizard ]);
 
   const getWizards = trpc.getWizards.useQuery(undefined, {
-     initialData: initialWizards,
-     refetchOnMount: false,
-     refetchOnReconnect: false,
+    initialData: initialWizards,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
   
   const setActiveWizard = trpc.setActiveWizard.useMutation();
@@ -44,7 +44,6 @@ export const WizardSelector = ({
   const handleLoadWizard = (name: string) => {
     setActiveWizard.mutate(name);
 
-    // @ts-ignore
     onActiveWizardChange(getWizards.data.find(w => w.name === name)!.wizard);
   };
 

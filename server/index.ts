@@ -7,7 +7,7 @@ import z from "zod";
 
 import { publicProcedure, router } from "./trpc";
 import { WizardsTable, ActiveWizardTable } from "@/db/schema";
-import { WizardData } from '@/types';
+import type { WizardData } from '@/types';
 
 neonConfig.fetchConnectionCache = true;
 
@@ -25,30 +25,27 @@ export const appRouter = router({
       createdBy: z.string(),
       wizard: z.any(),
     }))
-    .mutation(async (opts) => {
-      await db.insert(WizardsTable).values({
-        name: opts.input.name,
-        createdBy: opts.input.createdBy,
-        wizard: opts.input.wizard,
-      });
+    .mutation(async ({ input: { name, createdBy, wizard} }) => {
+      await db.insert(WizardsTable).values({ name, createdBy, wizard });
       
-      const result = await db.update(ActiveWizardTable).set({ active: opts.input.name });
+      const result = await db.update(ActiveWizardTable).set({ active: name });
       if (result.rowCount === 0) {
-        await db.insert(ActiveWizardTable).values({ active: opts.input.name });
+        await db.insert(ActiveWizardTable).values({ active: name });
       }
 
       return true;
     }),
-  getActiveWizard: publicProcedure.query(() =>
-     db
+  getActiveWizard: publicProcedure.query(async () =>
+     (await db
       .select({ wizard: WizardsTable.wizard })
       .from(WizardsTable)
       .rightJoin(ActiveWizardTable, eq(WizardsTable.name, ActiveWizardTable.active))
+      .limit(1))[0]
   ),
   setActiveWizard: publicProcedure
     .input(z.string())
-    .mutation(async (opts) => {
-      await db.update(ActiveWizardTable).set({ active: opts.input });
+    .mutation(async ({ input }) => {
+      await db.update(ActiveWizardTable).set({ active: input });
       return true;
     }),
   // deleteWizard: publicProcedure.input(z.number()).mutation(async (opts) => {

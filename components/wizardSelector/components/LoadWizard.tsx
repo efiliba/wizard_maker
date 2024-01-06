@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { WizardRecord } from "@/types";
+import type { WizardRecord } from "@/types";
 import {
   Button,
   Dialog,

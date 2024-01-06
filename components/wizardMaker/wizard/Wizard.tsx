@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { WizardData, ActionsStep, WizardStep } from "@/types";
+import type { WizardData, ActionsStep, WizardStep } from "@/types";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui";
 import { Actions, DeleteStep, NextQuestionOrActions, Question } from "./components";
 
