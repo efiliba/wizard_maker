@@ -26,9 +26,7 @@ export const WizardMaker = async ({ editMode }: { editMode: boolean }) => {
     "use server";
 
     if (JSON.stringify(wizard) !== JSON.stringify(activeWizard)) {
-      activeWizard = {
-        ...wizard
-      };
+      activeWizard = { ...wizard };
 
       revalidatePath('/');
     }

@@ -7,7 +7,7 @@ import z from "zod";
 
 import { publicProcedure, router } from "./trpc";
 import { WizardsTable, ActiveWizardTable } from "@/db/schema";
-import type { WizardData } from '@/types';
+import { WizardData, WizardStep, wizardStep } from '@/types';
 
 neonConfig.fetchConnectionCache = true;
 
@@ -17,23 +17,27 @@ const db = drizzle(sql);
 
 // migrate(db, { migrationsFolder: 'drizzle' });
 
+const isWizardData = (wizard: WizardStep): wizard is WizardData => 'question' in wizard;
+
 export const appRouter = router({
   getWizards: publicProcedure.query(() => db.select().from(WizardsTable)),
   addWizard: publicProcedure
     .input(z.object({
       name: z.string(),
       createdBy: z.string(),
-      wizard: z.any(),
+      wizard: wizardStep
     }))
-    .mutation(async ({ input: { name, createdBy, wizard} }) => {
-      await db.insert(WizardsTable).values({ name, createdBy, wizard });
-      
-      const result = await db.update(ActiveWizardTable).set({ active: name });
-      if (result.rowCount === 0) {
-        await db.insert(ActiveWizardTable).values({ active: name });
-      }
+    .mutation(async ({ input: { name, createdBy, wizard } }) => {
+      if (isWizardData(wizard)) {
+        await db.insert(WizardsTable).values({ name, createdBy, wizard });
+        
+        const result = await db.update(ActiveWizardTable).set({ active: name });
+        if (result.rowCount === 0) {
+          await db.insert(ActiveWizardTable).values({ active: name });
+        }
 
-      return true;
+        return true;
+      }
     }),
   getActiveWizard: publicProcedure.query(async () =>
      (await db

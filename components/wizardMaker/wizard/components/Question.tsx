@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useState, useTransition } from "react";
+import { ChangeEvent, useState, useEffect, useTransition } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
 import { Input } from "@/components/ui";
@@ -21,6 +21,10 @@ export const Question = ({ editMode, question = '', onSave = () => Promise.resol
   const [dirty, setDirty] = useState(false);
 
   const [pending, startTransition] = useTransition();
+
+  useEffect(() => {
+    setQuestion(question);
+  }, [ question ]);
 
   const handleUpdateQuestion = (input: ChangeEvent<HTMLInputElement>) => {
     setQuestion(input.target.value);
