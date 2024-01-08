@@ -6,7 +6,7 @@ import { serverClient } from "@/app/_trpc/serverClient";
 
 import { cn } from "@/lib/utils";
 import type { WizardData } from "@/types";
-import { LoadWizard, SaveWizard } from "./components";
+import { LoadWizard, SaveWizard } from './components';
 
 type WizardSelectorProps = {
   className?: string,
@@ -58,8 +58,13 @@ export const WizardSelector = ({
   };
 
   return (
-    <div className={cn('sticky top-0 z-10 grid grid-flow-col justify-end gap-x-2', className)}>
-      <LoadWizard editMode={editMode} wizards={getWizards.data} onLoad={handleLoadWizard} onDelete={handleDeleteWizard} />
+    <div className={cn('sticky top-0 z-10 grid grid-flow-col justify-end gap-x-2 bg-background', className)}>
+      <LoadWizard
+        editMode={editMode}
+        wizards={getWizards.data}
+        onLoad={handleLoadWizard}
+        onDelete={handleDeleteWizard}
+      />
       {editMode && <SaveWizard onSave={handleSaveWizard} />}
     </div>
   );

@@ -3,7 +3,7 @@ import { set } from "lodash";
 
 import type { WizardData, ActionsStep } from "@/types";
 import { serverClient } from "@/app/_trpc/serverClient";
-import { WizardSelector } from "@/components";
+import { WizardSelector } from "./wizardSelector";
 import { Wizard } from "./wizard";
 
 let activeWizard: WizardData = {};
