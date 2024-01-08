@@ -7,7 +7,7 @@ import z from "zod";
 
 import { publicProcedure, router } from "./trpc";
 import { WizardsTable, ActiveWizardTable } from "@/db/schema";
-import { WizardData, WizardStep, wizardStep } from '@/types';
+import { WizardData, WizardStep, wizardStep } from "@/types";
 
 neonConfig.fetchConnectionCache = true;
 
@@ -20,7 +20,10 @@ const db = drizzle(sql);
 const isWizardData = (wizard: WizardStep): wizard is WizardData => 'question' in wizard;
 
 export const appRouter = router({
-  getWizards: publicProcedure.query(() => db.select().from(WizardsTable)),
+  getWizards: publicProcedure
+    .query(() => db.select().from(WizardsTable)
+    .where(eq(WizardsTable.deleteFlag, false))
+  ),
   addWizard: publicProcedure
     .input(z.object({
       name: z.string(),
@@ -40,7 +43,7 @@ export const appRouter = router({
       }
     }),
   getActiveWizard: publicProcedure.query(async () =>
-     (await db
+    (await db
       .select({ wizard: WizardsTable.wizard })
       .from(WizardsTable)
       .rightJoin(ActiveWizardTable, eq(WizardsTable.name, ActiveWizardTable.active))
@@ -52,10 +55,12 @@ export const appRouter = router({
       await db.update(ActiveWizardTable).set({ active: input });
       return true;
     }),
-  // deleteWizard: publicProcedure.input(z.number()).mutation(async (opts) => {
-  //   await db.update(WizardsTable).set({ done: opts.input }).where(eq(WizardsTable.id, 1)).run();
-  //   return true;
-  // }),
+  deleteWizard: publicProcedure
+    .input(z.string())
+    .mutation(async ({ input }) => {
+      await db.update(WizardsTable).set({ deleteFlag: true }).where(eq(WizardsTable.name, input));
+      return true;
+    }),
 });
 
 export type AppRouter = typeof appRouter;

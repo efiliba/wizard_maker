@@ -27,7 +27,7 @@ export const WizardSelector = ({
 }: WizardSelectorProps) => {
   useEffect(() => {
     onActiveWizardChange(selectedWizard.wizard!);
-  }, [ onActiveWizardChange, selectedWizard ]);
+  }, []);
 
   const getWizards = trpc.getWizards.useQuery(undefined, {
     initialData: initialWizards,
@@ -41,19 +41,25 @@ export const WizardSelector = ({
     onSettled: () => getWizards.refetch()
   });
 
+  const deleteWizard = trpc.deleteWizard.useMutation({
+    onSettled: () => getWizards.refetch()
+  });
+
   const handleLoadWizard = (name: string) => {
     setActiveWizard.mutate(name);
 
     onActiveWizardChange(getWizards.data.find(w => w.name === name)!.wizard);
   };
 
-  const handleSaveWizard = (name: string) => {    
+  const handleDeleteWizard = deleteWizard.mutate;
+
+  const handleSaveWizard = (name: string) => {
     saveWizard.mutate({ name, createdBy: 'Eli', wizard });
   };
 
   return (
-    <div className={cn('sticky top-0 z-10 grid grid-flow-col justify-end gap-x-2 bg-black', className)}>
-      <LoadWizard wizards={getWizards.data} onLoad={handleLoadWizard} />
+    <div className={cn('sticky top-0 z-10 grid grid-flow-col justify-end gap-x-2', className)}>
+      <LoadWizard editMode={editMode} wizards={getWizards.data} onLoad={handleLoadWizard} onDelete={handleDeleteWizard} />
       {editMode && <SaveWizard onSave={handleSaveWizard} />}
     </div>
   );

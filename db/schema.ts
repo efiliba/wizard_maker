@@ -1,7 +1,6 @@
-// @ts-nocheck
 import { pgTable, text, timestamp, boolean, json } from "drizzle-orm/pg-core";
 
-import type { WizardData } from '@/types';
+import type { WizardData } from "@/types";
 
 export const WizardsTable = pgTable('wizards', {
   name: text('name').primaryKey().notNull(),

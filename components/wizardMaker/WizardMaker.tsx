@@ -25,11 +25,9 @@ export const WizardMaker = async ({ editMode }: { editMode: boolean }) => {
   const handleActiveWizardChange = async (wizard: WizardData) => {
     "use server";
 
-    if (JSON.stringify(wizard) !== JSON.stringify(activeWizard)) {
-      activeWizard = { ...wizard };
+    activeWizard = { ...wizard };
 
-      revalidatePath('/');
-    }
+    revalidatePath('/');
   };
 
   const handleAddNextQuestion = (path: number[]) => async () => {
@@ -54,15 +52,13 @@ export const WizardMaker = async ({ editMode }: { editMode: boolean }) => {
     "use server";
 
     mutateQuestionAtPath(activeWizard, path, question);
-    
-    revalidatePath('/');
   };
 
   const handleUpdateActions = (path: number[]) => async (data: ActionsStep) => {
     "use server";
 
     mutateAnswerAtPath(activeWizard, path, data);
-
+    
     revalidatePath('/');
   };
 

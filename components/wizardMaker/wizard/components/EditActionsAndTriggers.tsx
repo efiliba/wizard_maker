@@ -61,7 +61,7 @@ export const EditActionsAndTriggers = ({ data, onUpdate }: Props) => {
         <DialogHeader>
           <DialogTitle className="mb-2">Update the actions and triggers.</DialogTitle>
           <DialogDescription>
-            <div>Actions:</div>
+            <span>Actions:</span>
             {actions.map((action, index) =>
               <Input
                 ref={lastActionRef}
@@ -73,7 +73,7 @@ export const EditActionsAndTriggers = ({ data, onUpdate }: Props) => {
               />
             )}
             <Button
-              className="mt-2"
+              className="mt-2 w-full sm:w-auto"
               variant="secondary"
               size="sm"
               onClick={handleAddNewAction}

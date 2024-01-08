@@ -25,17 +25,24 @@ import {
 } from "@/components/ui";
 
 type Props = {
+  editMode: boolean,
   wizards: WizardRecord[],
   onLoad: (name: string) => void,
+  onDelete: (name: string) => void,
 };
 
-export const LoadWizard = ({ wizards, onLoad }: Props) => {
+export const LoadWizard = ({ editMode, wizards, onLoad, onDelete }: Props) => {
   const [selectedWizard, setSelectedWizard] = useState<string>();
 
   const handleChange = (name: string) => setSelectedWizard(name);
 
-  const handleLoad = () => {
-    onLoad(selectedWizard!);
+  const handleLoad = (name?: string) => () => {
+    onLoad(name!);
+    setSelectedWizard(undefined);
+  };
+  
+  const handleDelete = (name?: string) => () => {
+    onDelete(name!);
     setSelectedWizard(undefined);
   };
 
@@ -69,9 +76,14 @@ export const LoadWizard = ({ wizards, onLoad }: Props) => {
             </TooltipProvider>
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="gap-y-2">
+          {editMode &&
+            <Button variant="destructive" disabled={!selectedWizard} onClick={handleDelete(selectedWizard)}>
+              Delete
+            </Button>
+          }
           <DialogClose asChild>
-            <Button disabled={!selectedWizard} onClick={handleLoad}>Load</Button>
+            <Button disabled={!selectedWizard} onClick={handleLoad(selectedWizard)}>Load</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
