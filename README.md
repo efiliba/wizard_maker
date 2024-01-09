@@ -14,11 +14,12 @@ Create Yes / No based wizards to guide users towards a checklist of actions to p
 - Drizzle ORM with Postgres through [Neon](https://neon.tech) 
 - TypeScript and Zod
 - Tailwind
-- Shadcn
+- Shadcn/ui
 
 ## Deployed on Vercel
 https://wizard-maker.vercel.app
 
+## Development Notes
 ### tPRC Server
 **\servertrpc.ts** - initialise router and publicProcedure  
 **\serverindex.ts** - create trpc appRouter instance that contains the db procedures
