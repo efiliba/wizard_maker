@@ -21,17 +21,17 @@ https://wizard-maker.vercel.app
 
 ## Development Notes
 ### tPRC Server
-**\servertrpc.ts** - initialise router and publicProcedure  
-**\serverindex.ts** - create trpc appRouter instance that contains the db procedures
+**\servert\rpc.ts** - initialise router and publicProcedure  
+**\server\index.ts** - create trpc appRouter instance that contains the db procedures
 
-**\api\trpc\[trpc]\route.ts** - Connect trpc appRouter to the nextJS App Router _(need a route in the App Directory)_
+**\app\api\trpc\\[trpc]\route.ts** - Connect trpc appRouter to the nextJS App Router _(need a route in the App Directory)_
 
 Test: http://localhost:3000/api/trpc/getWizards
 
 ### React Query
 Use ReactQuery to make the request from the client  
-**\api\_trpc\client.ts** (dir starting with _ is ignored by the App Router routing) - tRPC React client (passing types - connects server types to client code)  
-**\api\_trpc\Provider.tsx** - connect tRPC client to ReactQuery
+**\api\\_trpc\client.ts** (dir starting with _ is ignored by the App Router routing) - tRPC React client (passing types - connects server types to client code)  
+**\api\\_trpc\Provider.tsx** - connect tRPC client to ReactQuery
 
 ### Drizzle ORM
 **\db\schema.ts** - create schema for db tables  
