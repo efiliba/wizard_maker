@@ -1,22 +1,12 @@
 import { revalidatePath } from "next/cache";
-import { set } from "lodash";
 
 import type { WizardData, ActionsStep } from "@/types";
 import { serverClient } from "@/app/_trpc/serverClient";
 import { WizardSelector } from "./wizardSelector";
 import { Wizard } from "./wizard";
+import { mutateQuestionAtPath, mutateAnswerAtPath } from "../utils";
 
 let activeWizard: WizardData = {};
-
-const mutateQuestionAtPath = async (state: WizardData, path: number[], question: string) => {
-  const buildPath = path.map(p => `answers[${p}]`).concat('question').join('.');
-  set(state, buildPath, question);
-};
-
-const mutateAnswerAtPath = async (state: WizardData, path: number[], answer: object) => {
-  const buildPath = path.map(p => `answers[${p}]`).join('.');
-  set(state, buildPath, answer);
-};
 
 export const WizardMaker = async ({ editMode }: { editMode: boolean }) => {
   const initialWizards = await serverClient.getWizards();

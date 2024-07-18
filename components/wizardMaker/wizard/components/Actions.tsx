@@ -10,7 +10,7 @@ type Props = {
 
 export const Actions = ({ editable, data, onUpdate }: Props) =>
   <div className="grid grid-cols-[1fr_max-content] gap-x-2">
-    <ul className="border">
+    <ul className="border" data-testid="actions">
       {data.actions.map((action, index) =>
         <li key={index} className="pl-2 pt-2 grid grid-cols-[max-content_1fr] items-center">
           <Checkbox id={`step${index}`} />

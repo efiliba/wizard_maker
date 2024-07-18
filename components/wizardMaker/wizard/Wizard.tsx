@@ -2,24 +2,7 @@ import { cn } from "@/lib/utils";
 import type { WizardData, ActionsStep, WizardStep } from "@/types";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui";
 import { Actions, DeleteStep, NextQuestionOrActions, Question } from "./components";
-
-const mapQuestionByIndex = (index: number) => {
-  switch (index) {
-    case 0: return { questionText: 'Yes', backgroundColor: 'bg-primary' };
-    case 1: return { questionText: 'No', backgroundColor: 'bg-secondary' };
-    default: return {};
-  }
-};
-
-const addQuestionTextAndStylesReducer = (type: string) =>
-  <T,>(paddedAnswers: (T & WizardStep)[], answer: WizardStep, index: number) => {
-    paddedAnswers[index] = {
-      ...paddedAnswers[index],
-      ...answer,
-    };
-
-    return paddedAnswers;
-  };
+import { defaultYesNoQuestion, addFields_Reducer } from "../../utils";
 
 type WizardProps = {
   className?: string,
@@ -89,7 +72,7 @@ export const Wizard = ({
     <Question editMode={editable} question={question!} onSave={onUpdateQuestion(path)} />
     <Accordion type={editable ? 'multiple' : 'single'}>
       {answers
-        .reduce(addQuestionTextAndStylesReducer('boolean'), [mapQuestionByIndex(0), mapQuestionByIndex(1)])
+        .reduce(addFields_Reducer('boolean'), [...defaultYesNoQuestion])
         .map((answer, index) =>
           <AccordionItem className="relative" key={index} value={`item${index}`}>
             <AccordionTrigger className={`p-4 border ${answer.backgroundColor}`}>
